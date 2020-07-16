@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 
 <head>
   <meta charset="UTF-8">
@@ -9,12 +10,9 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
   </script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
-  <script>
-    var diseases;
-  </script>
 </head>
 
-<body onload="load_disease();">
+<body onload="load();">
   <div style="width:70%; height: 220px; padding: 20px; float: left;">
 
     <div>
@@ -44,6 +42,12 @@
   </form>
 
   <script>
+    var diseases;
+
+    function load() {
+      load_disease();
+    }
+
     function load_disease() {
       //TODO
       // var diseases_json = '{' +
@@ -68,20 +72,12 @@
       }];
     }
 
-    //选中疾病后将疾病id输入表单
-    function set_disease() {
-      var input_disease = $("#input-disease");
-      var dise_list = $("#dise-list");
-      input_disease.val(dise_list.getSelectedValue());
-    }
-
     //键入时根据疾病助记码查找并填入
-    function search_disease(keyword) {
-      // var keyword = $("#input-disease").val();
+    function search_disease() {
+      var keyword = $("input", $("#dise-search").next("span")).val();
       var reg = new RegExp(keyword);
       var dise_arr = new Array();
       var dise_list = $("#dise-list");
-      alert("none");
 
       diseases.forEach(disease => {
         if (reg.test(disease.DiseaseCode)) {
@@ -95,12 +91,20 @@
       dise_list.datagrid({
         data: dise_arr
       });
-      // var disease_name;
-      // alert(diseases[disease_code]);
     }
 
-    $("#dise-input").textbox({
-      onkeypress: search_disease(this.value)
+    //选中疾病后将疾病id输入表单
+    function set_disease() {
+      var input_disease = $("#input-disease");
+      var dise_list = $("#dise-list");
+      input_disease.val(dise_list.getSelectedValue());
+    }
+
+    //绑定输入框
+    $(function() {
+      $("input", $("#dise-search").next("span")).keyup(function() {
+        search_disease();
+      });
     });
   </script>
 </body>

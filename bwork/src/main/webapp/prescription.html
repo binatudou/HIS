@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 
 <head>
   <meta charset="UTF-8">
@@ -11,7 +12,50 @@
 </head>
 
 <body>
+  <div class="easyui-layout" fit="true">
+    <div id="pres-list-panel" region="center" title="<center>处方列表</center>">
+      <div>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="addPanel()">添加处方</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="removePanel()">移除处方</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitPanel()">提交处方</a>
+      </div>
 
+      <div id="pres-panel" class="easyui-accordion" style="width:100%;height:90%;">
+      </div>
+    </div>
+
+    <div id="drug-panel" region="east" title="<center>药品搜索列表</center>" style="width: 30%;">
+      什么都没有
+    </div>
+  </div>
+
+
+
+  <script type="text/javascript">
+    function selectPanel() {
+      $.messager.prompt('Prompt', '请输入处方名', function(s) {
+        if (s) {
+          $('#pres-panel').accordion('select', s);
+        }
+      });
+    }
+
+    function addPanel() {
+      $('#aa').accordion('add', {
+        title: 'Title' + idx,
+        content: '<div style="padding:10px">Content' + idx + '</div>'
+      });
+      idx++;
+    }
+
+    function removePanel() {
+      var pp = $('#aa').accordion('getSelected');
+      if (pp) {
+        var index = $('#aa').accordion('getPanelIndex', pp);
+        $('#aa').accordion('remove', index);
+      }
+    }
+  </script>
 </body>
 
 </html>
