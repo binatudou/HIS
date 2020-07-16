@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
+  </script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+  <script>
+    $("[name='record-id']").on('blur', function() {
+      if (($('#ipt').val() == '')) {
+        alert("none");
+      } else {
+        alert("ifyoucan");
+      }
+    })
+  </script>
+</head>
+
+<body>
+  <div class="easyui-panel" title="New Topic" fit="true">
+    <div style="padding:10px 60px 20px 60px">
+      <form id="regist-form" method="post">
+        <table cellpadding="5">
+          <tr>
+            <td>*病历号:</td>
+            <td><input class="easyui-textbox" type="text" name="record-id" id="record-id" required="true" validType="number"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>*姓名:</td>
+            <td><input class="easyui-textbox" type="text" name="name" id="name" required="true"></input>
+            </td>
+            <td>*性别:</td>
+            <td><select class="easyui-combobox" name="sex" id="sex" required="true" style="width:100px;">
+                <option value="0">男</option>
+                <option value="1">女</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>*出生日期:</td>
+            <td><input class="easyui-textbox" type="date" name="birthday" id="birthday" required="true" validType="date" style="width:150px;"></input>
+            </td>
+            <td>*年龄:</td>
+            <td><input class="easyui-textbox" type="text" name="age" id="age" required="true" style="width:100px;"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>身份证号:</td>
+            <td><input class="easyui-textbox" type="number" name="id-number" id="id-number"></input>
+            </td>
+            <td>*家庭住址:</td>
+            <td><input class="easyui-textbox" type="text" name="address" id="address" required="true" style="width:280px;"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>*看诊日期:</td>
+            <td><input class="easyui-textbox" type="date" name="regist-date" id="regist-date" required="true"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>*挂号科室:</td>
+            <td>
+              <select class="easyui-combobox" name="department" id="department" loader="getDepartment()" required="true" style="width:200px;">
+                <option value="1">心脑血管科</option>
+              </select>
+            </td>
+            <td>*午别:
+              <td>
+                <select class="easyui-combobox" name="doc-time" id="doc-time" required="true" style="width:100px;">
+                <option value="0">上午</option>
+                <option value="1">下午</option>
+                <option value="2">晚间</option>
+              </select>
+              </td>
+          </tr>
+          <tr>
+            <td>*号别:</td>
+            <td>
+              <select class="easyui-combobox" name="doc-level" id="doc-level" required="true" style="width:100px;">
+                <option value="0">普通号</option>
+                <option value="1">专家号</option>
+              </select>
+            </td>
+            <td>*看诊医生:</td>
+            <td>
+              <select class="easyui-combobox" name="doctor" id="doctor" loader="getDoctor()" required="true" style="width:100px;">
+                <option value="1">郝医生</option>
+              </select>
+            </td>
+            <tr>
+              <td>总号数: 50</td>
+              <td></td>
+              <td>已用号数: 2</td>
+              <td></td>
+            </tr>
+          </tr>
+          <tr>
+            <td>是否购买病历本</td>
+            <td><input name="buy-record" id="buy-record" type="radio"></td>
+          </tr>
+        </table>
+      </form>
+      <div style="text-align:center;padding:5px">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">挂号</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清空</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    function submitForm() {
+      if (check_form()) {
+        $('#regist-form').form('submit');
+        alert("挂号成功")
+      } else {
+        alert("挂号失败")
+      }
+    }
+
+    function clearForm() {
+      $('#regist-form').form('clear');
+    }
+
+    function getDepartment() {
+      //TODO
+    }
+
+    function getDoctor() {
+      //TODO
+    }
+
+    function check_form() {
+      var error;
+      if ($('#record-id')) {
+
+      } else {
+
+      }
+    }
+
+    function getAge() {
+      var aDate = new Date();
+      var thisYear = aDate.getYear();
+      var brith = document.getElementById("date1").value;
+      if (!brith) return; //未输入
+      brith = brith.substr(0, 4);
+      age = (thisYear - brith);
+      $("[type='hidden'][name='age']").value = age;
+    }
+  </script>
+</body>
+
+</html>

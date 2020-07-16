@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
+  </script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+  <script>
+    var diseases;
+  </script>
+</head>
+
+<body onload="load_disease();">
+  <div style="width:70%; height: 220px; padding: 20px; float: left;">
+
+    <div>
+      <label>病种搜索：</label>
+      <input class="easyui-textbox" name="dise-search" id="dise-search" prompt="请输入病种" style="width:200px">
+    </div>
+
+    <div>
+      <ul class="easyui-datalist" name="dise-list" id="dise-list" lines="true" style="width:100%;height:150px">
+        <li value="1">古典型霍乱</li>
+        <li value="2">中型[典型]霍乱</li>
+        <li value="3">重型[暴发型或干性]霍乱</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <form id="diagnose-form" method="post">
+    <input type="hidden" name="disease" id="input-disease" class="form-control">
+
+    <div style="width: 100%; padding: 20px;">
+      <input class="easyui-textbox" name="diagnose" id="diagnose" prompt="在此输入诊断" multiline="true" style="width:100%;height:300px;">
+    </div>
+    <div>
+      <center><button type="submit">提交</button></center>
+    </div>
+  </form>
+
+  <script>
+    function load_disease() {
+      //TODO
+      // var diseases_json = '{' +
+      //   '{"DiseaseCode": "GDXHL", "古典型霍乱"},' +
+      //   '["ZXDXHL": "中型[典型]霍乱"],' +
+      //   '["ZXBFXHGXHL": "重型[暴发型或干性]霍乱"]' +
+      //   '}';
+
+      // diseases = JSON.parse(diseases_json);
+      diseases = [{
+        "id": "1",
+        "DiseaseCode": "GDXHL",
+        "DiseaseName": "古典型霍乱"
+      }, {
+        "id": "2",
+        "DiseaseCode": "ZXDXHL",
+        "DiseaseName": "中型[典型]霍乱"
+      }, {
+        "id": "3",
+        "DiseaseCode": "ZXBFXHGXHL",
+        "DiseaseName": "重型[暴发型或干性]霍乱"
+      }];
+    }
+
+    //选中疾病后将疾病id输入表单
+    function set_disease() {
+      var input_disease = $("#input-disease");
+      var dise_list = $("#dise-list");
+      input_disease.val(dise_list.getSelectedValue());
+    }
+
+    //键入时根据疾病助记码查找并填入
+    function search_disease(keyword) {
+      // var keyword = $("#input-disease").val();
+      var reg = new RegExp(keyword);
+      var dise_arr = new Array();
+      var dise_list = $("#dise-list");
+      alert("none");
+
+      diseases.forEach(disease => {
+        if (reg.test(disease.DiseaseCode)) {
+          dise_arr.push({
+            "value": disease.id,
+            "text": disease.DiseaseName
+          });
+        }
+      });
+
+      dise_list.datagrid({
+        data: dise_arr
+      });
+      // var disease_name;
+      // alert(diseases[disease_code]);
+    }
+
+    $("#dise-input").textbox({
+      onkeypress: search_disease(this.value)
+    });
+  </script>
+</body>
+
+</html>

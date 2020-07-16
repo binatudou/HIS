@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>HIS系统</title>
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+  <script>
+  </script>
+</head>
+
+<body style="height:100%;width:100%;overflow:hidden;border:none;background-color:#8CC7B5;">
+  <h2>
+    <center>HIS - 医院管理系统v1.0</center>
+  </h2>
+  <div class="easyui-window" title="HIS管理系统" icon="icon-help" style="width:1200px;height:600px;padding:5px;background: #fafafa;">
+    <div class="easyui-layout" fit="true">
+      <div region="center" border="false" border="false">
+        <div class="easyui-tabs" fit="true">
+          <div title="挂号">
+            <iframe id="registration-frame" width="100%" height="90%" src="registration.html" frameborder="0"></iframe>
+          </div>
+          <div title="退号">
+            <iframe id="refund-frame" width="100%" height="90%" src="refund.html" frameborder="0"></iframe>
+          </div>
+          <div title="看诊">
+            <iframe id="diagnose-frame" width="100%" height="90%" src="doctor.html" frameborder="0"></iframe>
+          </div>
+          <div title="收费">
+            <iframe id="payment-frame" width="100%" height="90%" src="payment.html" frameborder="0"></iframe>
+          </div>
+          <div title="发药">
+            <iframe id="givedrugs-frame" width="100%" height="90%" src="give_drugs.html" frameborder="0"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

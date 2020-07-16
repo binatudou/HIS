@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
+  </script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+</head>
+
+<body>
+  <div class="easyui-layout" fit="true">
+    <div id="p" data-options="region:'west'" title="待诊病人列表" style="width:30%;padding:10px">
+      <ul class="easyui-datalist" lines="true" style="width:100%;height:100%">
+        <li value="1">A先生</li>
+      </ul>
+    </div>
+    <div region="center" border="false" border="false">
+      <div class="easyui-tabs" fit="true">
+        <div title="看诊">
+          <iframe id="registration-frame" width="100%" height="90%" src="diagnose.html" frameborder="0"></iframe>
+        </div>
+        <div title="开药">
+          <iframe id="refund-frame" width="100%" height="90%" src="prescription.html" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
