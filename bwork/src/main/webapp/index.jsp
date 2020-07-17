@@ -7,7 +7,7 @@
 
 <body>
 <%
-    if(session.isNew() || session.getAttribute("loginSuccess") != null){
+    if(session.getAttribute("loginSuccess") == null){
     response.setStatus(response.SC_MOVED_TEMPORARILY);
     response.setHeader("Location", "login.html");
     }

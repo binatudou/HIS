@@ -25,9 +25,9 @@ public class LoginServlet extends HttpServlet {
         if (userID.equals("admin") && password.equals("123")) {
             request.getSession().setAttribute("user", "admin");
             request.getSession().setAttribute("authority", "admin");
-            request.setAttribute("loginSuccess", true);
+            request.getSession().setAttribute("loginSuccess", true);
         }
 
-        request.getRequestDispatcher("afterLogin.jsp").forward(request, response);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }

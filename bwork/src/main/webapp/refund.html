@@ -13,6 +13,7 @@
   <table id="dg" title="挂号信息查询" class="easyui-datagrid" style="width:700px;height:250px" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
     <thead>
       <tr>
+        <th field="RegistID" align="center" hidden="true">挂单号</th>
         <th field="RecordID" align="center" style="width: 10%;">病历号</th>
         <th field="PatiName" align="center" style="width: 20%;">患者姓名</th>
         <th field="ReseDate" align="center" style="width: 20%;">预约日期</th>
@@ -25,21 +26,21 @@
   <div id="toolbar">
     <label>病历号检索：</label>
     <input class="easyui-searchbox" name="search-record" id="search-record" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="refund()" style="float:right; width:15%">退号</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="doRefund()" style="float:right; width:15%">退号</a>
   </div>
 
   <script>
     function searchRecord(value) {
-      $(function() {
-        var params = {
-          "id": value
-        };
+      //判断输入是否为正整数
+      var reg = /^\d+$/; // 非负整数
+      if (reg.test(value)) {
         $.ajax({
           type: "GET",
-          contentType: "application/json;charset=UTF-8",
           url: "refund",
-          data: JSON.stringify(params),
-          dataType: JSON,
+          data: {
+            RecordID: value
+          },
+          dataType: "JSON",
           success: function(rItemList) {
             if (rItemList.length == 0)
               alert("未查询到该病历下的挂号记录");
@@ -53,17 +54,51 @@
             console.log(e.responseText);
           }
         });
-      });
+      } else {
+        alert("请输入正确的病历号");
+      }
     }
 
-    function refund() {
-      //TODO
+    function doRefund() {
       var row = $('#dg').datagrid('getSelected');
       if (row) {
         $.messager.confirm('确认', '是否退号？', function(r) {
-          alert("退号成功");
-          $("#dg").datagrid({
-            data: []
+          //执行退号，并返回结果
+          $.ajax({
+            type: "POST",
+            url: "refund",
+            data: {
+              RegistID: row.RegistID
+            },
+            dataType: "Text",
+            success: function(result) {
+              switch (result) {
+                case "0":
+                  alert("退号成功");
+                  break;
+
+                case "1":
+                  alert("退号失败：已看诊");
+                  break;
+
+                case "2":
+                  alert("退号失败：已退号");
+                  break;
+
+                default:
+                  alert("发生未知错误");
+                  break;
+              }
+              //清空搜索框与表格
+              $("#search-record").searchbox("clear");
+              $("#dg").datagrid({
+                data: []
+              });
+            },
+            error: function(e) {
+              console.log(e.status);
+              console.log(e.responseText);
+            }
           });
         });
       } else {

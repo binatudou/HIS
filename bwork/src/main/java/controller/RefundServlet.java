@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,44 +27,15 @@ public class RefundServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO
         try {
             request.setCharacterEncoding("UTF-8");
 
-            int id = Integer.parseInt(request.getParameter("id"));
-            List<RegistForm> rFormList = RegistFormService.find(id);
-            List<RefundItem> rItemList = new ArrayList<>();
+            int registID = Integer.parseInt(request.getParameter("RegistID"));
 
-            for (RegistForm rForm : rFormList) {
-                rItemList.add(new RefundItem(rForm.getId(), id, rForm.getPatiName(), rForm.getReseDate(),
-                        DOC_DATE[rForm.getDocTime()], rForm.getDeptName(), STATUS[rForm.getDiagStatus()]));
-            }
-
-            request.getRequestDispatcher("").forward(request, response);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            request.setCharacterEncoding("UTF-8");
-
-            int id = Integer.parseInt(request.getParameter("id"));
-            List<RegistForm> rFormList = RegistFormService.find(id);
-            List<RefundItem> rItemList = new ArrayList<>();
-
-            for (RegistForm rForm : rFormList) {
-                rItemList.add(new RefundItem(rForm.getId(), id, rForm.getPatiName(), rForm.getReseDate(),
-                        DOC_DATE[rForm.getDocTime()], rForm.getDeptName(), STATUS[rForm.getDiagStatus()]));
-            }
-            String rItemJson = JSON.toJSONString(rItemList);
-
+            int result = RegistFormService.refund(registID);
+            
             PrintWriter writer = response.getWriter();
-            writer.write(rItemJson);
+            writer.write(result);
             writer.flush();
             writer.close();
 
@@ -74,24 +46,42 @@ public class RefundServlet extends HttpServlet {
         }
     }
 
-    public class RefundItem {
-        int registID;
-        int recordID;
-        String patiName;
-        Date reseDate;
-        String docTime;
-        String deptName;
-        String diagStatus;
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            // 解决中文乱码
+            request.setCharacterEncoding("UTF-8");
+            response.setContentType("text/javascript;charset=utf-8");
 
-        public RefundItem(int registID, int recordID, String patiName, Date reseDate, String docTime, String deptName,
-                String diagStatus) {
-            this.registID = registID;
-            this.recordID = recordID;
-            this.patiName = patiName;
-            this.reseDate = reseDate;
-            this.docTime = docTime;
-            this.deptName = deptName;
-            this.diagStatus = diagStatus;
+            List<Map<String, Object>> rItemList = new ArrayList<>();
+
+            int recordID = Integer.parseInt(request.getParameter("RecordID"));
+            List<RegistForm> rFormList = RegistFormService.findByRecordID(recordID);
+
+            for (RegistForm rForm : rFormList) {
+                Map<String, Object> rItem = new HashMap<>();
+                rItem.put("RegistID", rForm.getId());
+                rItem.put("RecordID", recordID);
+                rItem.put("PatiName", rForm.getPatiName());
+                rItem.put("ReseDate", rForm.getReseDate());
+                rItem.put("DocTime", DOC_DATE[rForm.getDocTime()]);
+                rItem.put("DeptName", rForm.getDeptName());
+                rItem.put("DiagStatus", STATUS[rForm.getDiagStatus()]);
+
+                rItemList.add(rItem);
+            }
+            String rItemJson = JSON.toJSONString(rItemList);
+            System.out.println(rItemJson);
+
+            PrintWriter writer = response.getWriter();
+            writer.write(rItemJson);
+            writer.flush();
+            writer.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
