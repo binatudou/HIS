@@ -6,14 +6,12 @@
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
-  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
-  </script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
 <body onload="load();">
-  <div style="width:70%; height: 220px; padding: 20px; float: left;">
+  <div style="width:100%; height: 200px; padding: 20px;">
 
     <div>
       <label>病种搜索：</label>
@@ -36,28 +34,22 @@
     <div style="width: 100%; padding: 20px;">
       <input class="easyui-textbox" name="diagnose" id="diagnose" prompt="在此输入诊断" multiline="true" style="width:100%;height:300px;">
     </div>
-    <div>
-      <center><button type="submit">提交</button></center>
-    </div>
   </form>
+  <div style="text-align:center;padding:5px">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="diagnosed()">完诊</a>
+  </div>
 
   <script>
-    var diseases;
+    var diseases_info;
 
     function load() {
       load_disease();
     }
 
+    //从服务器获取疾病信息
     function load_disease() {
       //TODO
-      // var diseases_json = '{' +
-      //   '{"DiseaseCode": "GDXHL", "古典型霍乱"},' +
-      //   '["ZXDXHL": "中型[典型]霍乱"],' +
-      //   '["ZXBFXHGXHL": "重型[暴发型或干性]霍乱"]' +
-      //   '}';
-
-      // diseases = JSON.parse(diseases_json);
-      diseases = [{
+      diseases_info = [{
         "id": "1",
         "DiseaseCode": "GDXHL",
         "DiseaseName": "古典型霍乱"
@@ -72,6 +64,15 @@
       }];
     }
 
+    //提交诊断信息，并清空界面
+    function diagnosed() {
+      $("diagnose-form").form("submit");
+      alert("提交成功");
+      $("#diagnose").textbox("setValue", "");
+      $("#dise-search").textbox("setValue", "");
+      search_disease();
+    }
+
     //键入时根据疾病助记码查找并填入
     function search_disease() {
       var keyword = $("input", $("#dise-search").next("span")).val();
@@ -79,7 +80,7 @@
       var dise_arr = new Array();
       var dise_list = $("#dise-list");
 
-      diseases.forEach(disease => {
+      diseases_info.forEach(disease => {
         if (reg.test(disease.DiseaseCode)) {
           dise_arr.push({
             "value": disease.id,

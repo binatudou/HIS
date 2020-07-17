@@ -6,18 +6,18 @@
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
-  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js">
-  </script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
   <script>
-    $("[name='record-id']").on('blur', function() {
-      if (($('#ipt').val() == '')) {
-        alert("none");
-      } else {
-        alert("ifyoucan");
-      }
-    })
+    //将得到的医生载入复选框中
+    function refreshDoctor() {
+      //TODO
+      alert("1")
+      var doc_arr = getSelectDoctor();
+      $("#doctor").combobox({
+        data: doc_arr
+      })
+    }
   </script>
 </head>
 
@@ -28,7 +28,7 @@
         <table cellpadding="5">
           <tr>
             <td>*病历号:</td>
-            <td><input class="easyui-textbox" type="text" name="record-id" id="record-id" required="true" validType="number"></input>
+            <td><input class="easyui-textbox" type="text" name="record-id" id="record-id" required="true" validType="number" icon="icon-search"></input>
             </td>
           </tr>
           <tr>
@@ -36,8 +36,8 @@
             <td><input class="easyui-textbox" type="text" name="name" id="name" required="true"></input>
             </td>
             <td>*性别:</td>
-            <td><select class="easyui-combobox" name="sex" id="sex" required="true" style="width:100px;">
-                <option value="0">男</option>
+            <td><select name="sex" id="sex" required="true" style="width:100px;">
+                <option value="0" selected>男</option>
                 <option value="1">女</option>
               </select>
             </td>
@@ -47,7 +47,7 @@
             <td><input class="easyui-textbox" type="date" name="birthday" id="birthday" required="true" validType="date" style="width:150px;"></input>
             </td>
             <td>*年龄:</td>
-            <td><input class="easyui-textbox" type="text" name="age" id="age" required="true" style="width:100px;"></input>
+            <td><input class="easyui-textbox" type="number" name="age" id="age" required="true" style="width:100px;"></input>
             </td>
           </tr>
           <tr>
@@ -66,14 +66,14 @@
           <tr>
             <td>*挂号科室:</td>
             <td>
-              <select class="easyui-combobox" name="department" id="department" loader="getDepartment()" required="true" style="width:200px;">
-                <option value="1">心脑血管科</option>
+              <select name="department" id="department" required="true" onchange="refreshDoctor()" style="width:100px;">
+                <option value="1" selected>心脑血管科</option>
               </select>
             </td>
             <td>*午别:
               <td>
-                <select class="easyui-combobox" name="doc-time" id="doc-time" required="true" style="width:100px;">
-                <option value="0">上午</option>
+                <select name="doc-time" id="doc-time" required="true" onchange="refreshDoctor()" style="width:100px;">
+                <option value="0" selected>上午</option>
                 <option value="1">下午</option>
                 <option value="2">晚间</option>
               </select>
@@ -82,14 +82,14 @@
           <tr>
             <td>*号别:</td>
             <td>
-              <select class="easyui-combobox" name="doc-level" id="doc-level" required="true" style="width:100px;">
-                <option value="0">普通号</option>
+              <select name="doc-level" id="doc-level" required="true" onchange="refreshDoctor()" style="width:100px;">
+                <option value="0" selected>普通号</option>
                 <option value="1">专家号</option>
               </select>
             </td>
             <td>*看诊医生:</td>
             <td>
-              <select class="easyui-combobox" name="doctor" id="doctor" loader="getDoctor()" required="true" style="width:100px;">
+              <select name="doctor" id="doctor" required="true" style="width:100px;">
                 <option value="1">郝医生</option>
               </select>
             </td>
@@ -102,7 +102,16 @@
           </tr>
           <tr>
             <td>是否购买病历本</td>
-            <td><input name="buy-record" id="buy-record" type="radio"></td>
+            <td><input name="buy-record" id="buy-record" type="checkbox"></td>
+            <td>*收费方式:</td>
+            <td>
+              <select name="pay-type" id="pay-type" required="true" style="width:100px;">
+                <option value="0" selected>现金</option>
+                <option value="1">刷卡</option>
+              </select>
+            </td>
+            <td>总费用</td>
+            <td><input class="easyui-textbox" type="text" name="total-price" id="total-price" editable="false" value="20"></td>
           </tr>
         </table>
       </form>
@@ -112,13 +121,16 @@
       </div>
     </div>
   </div>
+
   <script>
+    //检查表单，无误则提交挂号单
     function submitForm() {
       if (check_form()) {
         $('#regist-form').form('submit');
-        alert("挂号成功")
+        $('#regist-form').form('clear');
+        alert("挂号成功");
       } else {
-        alert("挂号失败")
+        alert("挂号失败");
       }
     }
 
@@ -126,32 +138,76 @@
       $('#regist-form').form('clear');
     }
 
-    function getDepartment() {
-      //TODO
+    //从后台获取该科室、号别、午别下可挂号的医生
+    function getSelectDoctor() {
+      return [{
+        "value": 1,
+        "text": "郝医生"
+      }];
     }
 
-    function getDoctor() {
-      //TODO
+
+    //计算总价
+    function calTotalPrice() {
+      var doc_price = $("#doc-level").combobox("getValue") == 0 ? 20 : 50;
+      var record_price = $("#buy-record").get(0).checked ? 1 : 0;
+      var total_price = doc_price + record_price;
+      $("#total-price").textbox("setValue", total_price);
     }
 
+    //检查提交内容
     function check_form() {
-      var error;
-      if ($('#record-id')) {
-
-      } else {
-
-      }
+      //TODO
+      return true;
     }
 
-    function getAge() {
-      var aDate = new Date();
-      var thisYear = aDate.getYear();
-      var brith = document.getElementById("date1").value;
-      if (!brith) return; //未输入
-      brith = brith.substr(0, 4);
-      age = (thisYear - brith);
-      $("[type='hidden'][name='age']").value = age;
+    //出生日期计算年龄
+    function calAge() {
+      var curDate = new Date();
+      var curYear = curDate.getFullYear();
+      var birthday = $("#birthday").val();
+      if (!birthday) //未输入生日则返回
+        return;
+      birthday = birthday.substr(0, 4);
+      var age = (curYear - birthday);
+      $("#age").textbox("setValue", age);
     }
+
+    //绑定年龄计算函数
+    $(function() {
+      $("input", $("#birthday").next("span")).blur(function() {
+        calAge();
+      });
+    });
+    //绑定总价计算函数
+    $(function() {
+      $("input", $("#doc-level").next("span")).blur(function() {
+        calTotalPrice();
+        selectDoctor();
+      });
+    });
+    $(function() {
+      $("#buy-record").click(function() {
+        calTotalPrice();
+      });
+    });
+
+    //绑定选择医生函数
+    $(function() {
+      $("input", $("#regist-date").next("span")).blur(function() {
+        selectDoctor();
+      });
+    });
+    $(function() {
+      $("input", $("#doc-time").next("span")).blur(function() {
+        selectDoctor();
+      });
+    });
+    $(function() {
+      $("input", $("#department").next("span")).blur(function() {
+        selectDoctor();
+      });
+    });
   </script>
 </body>
 

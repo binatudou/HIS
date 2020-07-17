@@ -6,55 +6,259 @@
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body>
-  <div class="easyui-layout" fit="true">
-    <div id="pres-list-panel" region="center" title="<center>处方列表</center>">
+<body onload="load()">
+  <form action="presUpload">
+    <div id="pres-list-panel" region="center">
       <div>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="addPanel()">添加处方</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="removePanel()">移除处方</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitPanel()">提交处方</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pres_rename()">修改处方名</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pres_clear()">清空处方</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="pres_submit()">提交处方</a>
       </div>
 
-      <div id="pres-panel" class="easyui-accordion" style="width:100%;height:90%;">
+      <table id="pres-dg" title="未命名处方" class="easyui-datagrid" style="width:100%;height:400px" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
+        <thead>
+          <tr>
+            <th field="DrugID" style="width: 10%;">药品id</th>
+            <th field="DrugName" style="width: 20%;">药品名</th>
+            <th field="DrugPrice" style="width: 10%;">药品单价</th>
+            <th field="DrugNumber" style="width: 10%;">药品数量</th>
+            <th field="Description" style="width: 50%;">使用说明</th>
+          </tr>
+        </thead>
+      </table>
+      <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="add_drug()">添加药品</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="delete_drug()">删除药品</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="update_drug()">修改药品</a>
       </div>
     </div>
+  </form>
 
-    <div id="drug-panel" region="east" title="<center>药品搜索列表</center>" style="width: 30%;">
-      什么都没有
-    </div>
+  <!-- 药品添加窗口 -->
+  <div id="dlg" class="easyui-dialog" style="width:500px;height:500px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">添加药品</div>
+    <form id="fm" method="post">
+      <div style="margin-bottom:10px">
+        <input name="DrugCode" id="DrugCode" class="easyui-textbox" label="助记码:" labelAlign="right" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="DrugID" id="DrugID" class="easyui-textbox" required="true" label="*药品id:" labelAlign="right" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="DrugName" id="DrugName" class="easyui-textbox" readonly label="*药品名:" labelAlign="right" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="DrugPrice" id="DrugPrice" class="easyui-textbox" readonly label="单价:" labelAlign="right" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="DrugNumber" id="DrugNumber" class="easyui-textbox" type="number" required="true" label="*药品数量:" labelAlign="right" style="width:100%">
+      </div>
+      <div style="margin-bottom:20px">
+        <label>*药品说明:</label>
+        <input name="Description" id="Description" class="easyui-textbox" multiline="true" style="width:100%;height: 100px;">
+      </div>
+    </form>
+  </div>
+  <div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save_drug()" style="width:90px">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
   </div>
 
+  <script>
+    var pres_name = "";
+    var drugs_info;
 
+    function load() {
+      //TODO: delete loadData
+      loadData();
+      loadDrugs();
+    }
 
-  <script type="text/javascript">
-    function selectPanel() {
-      $.messager.prompt('Prompt', '请输入处方名', function(s) {
-        if (s) {
-          $('#pres-panel').accordion('select', s);
+    //录入样本数据
+    function loadData() {
+      $('#pres-dg').datagrid('insertRow', {
+        index: 1,
+        row: {
+          DrugID: "11",
+          DrugName: "测试药品1",
+          DrugPrice: "3",
+          DrugNumber: "2",
+          Description: "药品1"
+        }
+      });
+
+      $('#pres-dg').datagrid('insertRow', {
+        index: 1,
+        row: {
+          DrugID: "12",
+          DrugName: "测试药品2",
+          DrugPrice: "500",
+          DrugNumber: "3",
+          Description: "药品2"
         }
       });
     }
 
-    function addPanel() {
-      $('#aa').accordion('add', {
-        title: 'Title' + idx,
-        content: '<div style="padding:10px">Content' + idx + '</div>'
-      });
-      idx++;
+    //从服务器获取药品信息
+    function loadDrugs() {
+      //TODO
+      drugs_info = [{
+        "id": "1",
+        "DrugCode": "ZSYJAZZ",
+        "DrugName": "注射用甲氨喋呤",
+        "DrugPrice": "15.73"
+      }, {
+        "id": "2",
+        "DrugCode": "FKZLHNZSY",
+        "DrugName": "氟康唑氯化钠注射液(大扶康)",
+        "DrugPrice": "7.01"
+      }, {
+        "id": "3",
+        "DrugCode": "PTTZSY",
+        "DrugName": "50%葡萄糖注射液(塑瓶)",
+        "DrugPrice": "25.16"
+      }, {
+        "id": "4",
+        "DrugCode": "YSTBZFYDPTP",
+        "DrugName": "盐酸特比萘芬阴道泡腾片（丁克）",
+        "DrugPrice": "40.62"
+      }, {
+        "id": "5",
+        "DrugCode": "HZ",
+        "DrugName": "红芪",
+        "DrugPrice": "30.79"
+      }];
     }
 
-    function removePanel() {
-      var pp = $('#aa').accordion('getSelected');
-      if (pp) {
-        var index = $('#aa').accordion('getPanelIndex', pp);
-        $('#aa').accordion('remove', index);
+    //处方改名
+    function pres_rename() {
+      var new_title = prompt("请输入新的处方名", pres_name);
+      if (new_title) {
+        $("#pres-dg").datagrid({
+          title: new_title
+        });
+        pres_name = new_title;
       }
     }
+    //处方清空
+    function pres_clear() {
+      $.messager.confirm('Confirm', '警告：将清空处方', function(r) {
+        if (r)
+          $('#pres-dg').datagrid('loadData', {
+            total: 0,
+            rows: []
+          });
+      });
+    }
+
+    //*向父页面提交处方
+    function submit(drugs) {
+      //TODO
+      return true;
+    }
+
+    //处方逐条检查并提交
+    function pres_submit() {
+      //TODO
+      var drugs = $('#pres-dg').datagrid('getData');
+      //检查处方
+      if (!drugs.total) {
+        alert("处方错误");
+        return;
+      } else if (!pres_name) {
+        alert("请先命名处方");
+        return;
+      } else if (drugs.total == 0) {
+        alert("无法提交空处方");
+        return;
+      }
+
+      drugs.forEach(drug_info => {
+        if (!check(drug_info)) {
+          return;
+        }
+      });
+      //提交处方
+      if (data.total > 0) {
+        if (submit(drugs))
+          alert("提交成功");
+        else
+          alert("提交失败");
+      }
+    }
+
+    //添加药品记录
+    function add_drug() {
+      //TODO
+      $('#dlg').dialog('open').dialog('center').dialog('setTitle', '药品记录添加');
+      $('#fm').form('clear');
+    }
+
+    //暂存药品记录
+    function save_drug() {
+      var drug_info = {
+        DrugID: $("input", $("#DrugID").next("span")).val(),
+        DrugName: $("input", $("#DrugName").next("span")).val(),
+        DrugPrice: $("input", $("#DrugPrice").next("span")).val(),
+        DrugNumber: $("input", $("#DrugNumber").next("span")).val(),
+        Description: $("input", $("#Description").next("span")).val(),
+      }
+      $('#pres-dg').datagrid('insertRow', {
+        row: drug_info
+      });
+      $('#dlg').dialog('close');
+    }
+
+    //删除药品记录
+    function delete_drug() {
+      var row = $('#pres-dg').datagrid('getSelected');
+      if (row) {
+        $.messager.confirm('Confirm', '确认删除该药品吗？', function(r) {
+          if (r) {
+            var rowIndex = $('#pres-dg').datagrid('getRowIndex', row);
+            $('#pres-dg').datagrid('deleteRow', rowIndex);
+          }
+        });
+      } else {
+        alert("未选择或无效药品记录");
+      }
+    }
+
+    //修改药品记录
+    function update_drug() {
+      //TODO
+      var row = $('#pres-dg').datagrid('getSelected');
+      if (row) {
+        $('#dlg').dialog('open').dialog('center').dialog('setTitle', '药品记录修改');
+        $('#fm').form('load', row);
+      } else {
+        alert("未选择或无效药品记录");
+      }
+    }
+
+    //根据助记码搜索药品并录入数据
+    function search_drug() {
+      var keyword = $("input", $("#DrugCode").next("span")).val();
+
+      drugs_info.forEach(drug => {
+        if (keyword == drug.DrugCode) {
+          $("#DrugID").textbox("setValue", drug.id);
+          $("#DrugName").textbox("setValue", drug.DrugName);
+          $("#DrugPrice").textbox("setValue", drug.DrugPrice);
+        };
+      });
+    }
+
+    //绑定输入框
+    $(function() {
+      $("input", $("#DrugCode").next("span")).keyup(function() {
+        search_drug();
+      });
+    });
   </script>
 </body>
 

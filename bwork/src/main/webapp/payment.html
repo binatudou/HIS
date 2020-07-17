@@ -6,13 +6,139 @@
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/demo/demo.css">
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
 <body>
+  <div>
+    <label>病历号检索：</label>
+    <input class="easyui-searchbox" name="search-record" id="search-record" prompt='请输入病历号' searcher="search_record" style="width:200px" />
+  </div>
+  <table id="pres-dg" title="处方信息查询" class="easyui-datagrid" style="width:700px;height:250px" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
+    <thead>
+      <tr>
+        <th field="RecordID">病历号</th>
+        <th field="PatiName">患者姓名</th>
+        <th field="PresName">处方名</th>
+        <th field="TotalPrice">总价</th>
+        <th field="CreationTime">开立时间</th>
+        <th field="PresStatus">缴费状态</th>
+      </tr>
+    </thead>
+  </table>
+  <div id="toolbar">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="pay()">缴费</a>
+  </div>
 
+  <!-- 缴费发票窗口 -->
+  <div id="pay-dlg" class="easyui-dialog" style="width:500px;height:500px;padding:10px 20px" closed="true" buttons="#pay-dlg-buttons">
+    <div class="ftitle">缴费信息</div>
+    <form id="fm" method="post">
+      <h3>缴费信息确认</h3>
+      <div style="margin-bottom:10px">
+        <input name="invoiceID" id="invoiceID" class="easyui-textbox" label="发票号:" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="RecordID" id="RecordID" class="easyui-textbox" required="true" label="*病历号:" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="PatiName" id="PatiName" class="easyui-textbox" required="true" label="*患者姓名:" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <select class="easyui-combobox" name="pay-type" id="pay-type" required="true" editable="false" label="*支付方式:" style="width:100%;">
+          <option value="0" selected>现金</option>
+          <option value="1">刷卡</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="TotalPrice" id="TotalPrice" class="easyui-textbox" required="true" label="*应收金额:" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="Received" id="Received" class="easyui-textbox" required="true" label="*实收金额:" style="width:100%">
+      </div>
+      <div style="margin-bottom:10px">
+        <input name="Change" id="Change" class="easyui-textbox" label="找零:" readonly style="width:100%">
+      </div>
+    </form>
+  </div>
+  <div id="pay-dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="submit()">确认</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#pay-dlg').dialog('close')">取消</a>
+  </div>
+
+  <script>
+    function search_record(value) {
+      var p_list = getPrescription(value);
+      if (p_list) {
+        $("#pres-dg").datagrid({
+          data: p_list
+        });
+      } else {
+        alert("未查询到该病历下的处方开立记录");
+      }
+    }
+
+    function getPrescription(value) {
+      //TODO
+      var p_list = new Array();
+      if (value == "1") {
+        p_list[0] = {
+          "RecordID": "1",
+          "PatiName": "病人甲",
+          "PresName": "处方1",
+          "TotalPrice": "2.12",
+          "CreationTime": "2020-07-07 04:32:47",
+          "DiagStatus": "未缴费"
+        }
+      }
+      return p_list;
+    }
+
+    //加载缴费信息并打印发票
+    function pay() {
+      //TODO
+      var row = $('#pres-dg').datagrid('getSelected');
+      if (row) {
+        $('#pay-dlg').dialog('open').dialog('center').dialog('setTitle', '缴费信息确认');
+        $('#fm').form('load', row);
+      }
+    }
+
+    //提交缴费信息
+    function submit() {
+      //TODO
+      alert("缴费成功");
+      $("#pres-dg").datagrid({
+        data: []
+      });
+      $('#pay-dlg').dialog('close');
+    }
+
+    //计算找零
+    function cal_change() {
+      var total_price = $("input", $("#TotalPrice").next("span")).val();
+      var received = $("input", $("#Received").next("span")).val();
+      var _change = received - total_price;
+      if (_change)
+        $("#Change").textbox("setValue", _change);
+      else
+        alert("请输入正确总额和实付金额");
+    }
+
+    //绑定找零函数
+    $(function() {
+      $("input", $("#TotalPrice").next("span")).keyup(function() {
+        cal_change();
+      });
+    });
+
+    $(function() {
+      $("input", $("#Received").next("span")).keyup(function() {
+        cal_change();
+      });
+    });
+  </script>
 </body>
 
 </html>
