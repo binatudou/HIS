@@ -19,10 +19,10 @@ public class LoginServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
+        String userID = request.getParameter("userID");
         String password = request.getParameter("password");
 
-        if (username.equals("admin") && password.equals("123")) {
+        if (userID.equals("admin") && password.equals("123")) {
             request.getSession().setAttribute("user", "admin");
             request.getSession().setAttribute("authority", "admin");
             request.setAttribute("loginSuccess", true);

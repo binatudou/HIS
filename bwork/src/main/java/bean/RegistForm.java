@@ -8,7 +8,7 @@ public class RegistForm {
   private int departmentID;
   private int doctorID;
   private int operatorID;
-  private String name;
+  private String patiName;
   private int age;
   private Date registTime; //挂号时间
   private String deptName;
@@ -22,7 +22,7 @@ public class RegistForm {
    * @param departmentID 科室id
    * @param doctorID 医生id
    * @param operatorID 操作员id
-   * @param name 患者姓名
+   * @param patiName 患者姓名
    * @param age 患者年龄
    * @param registTime 挂号时间
    * @param deptName 科室名
@@ -30,14 +30,14 @@ public class RegistForm {
    * @param docTime 午别
    * @param diagStatus 挂号状态
    */
-  public RegistForm(int id, int recordID, int departmentID, int doctorID, int operatorID, String name, int age,
+  public RegistForm(int id, int recordID, int departmentID, int doctorID, int operatorID, String patiName, int age,
       Date registTime, String deptName, Date reseDate, int docTime, int diagStatus) {
     this.id = id;
     this.recordID = recordID;
     this.departmentID = departmentID;
     this.doctorID = doctorID;
     this.operatorID = operatorID;
-    this.name = name;
+    this.patiName = patiName;
     this.age = age;
     this.registTime = registTime;
     this.deptName = deptName;
@@ -116,17 +116,17 @@ public class RegistForm {
   }
 
   /**
-   * @return the name
+   * @return the patiName
    */
-  public String getName() {
-    return name;
+  public String getPatiName() {
+    return patiName;
   }
 
   /**
-   * @param name the name to set
+   * @param patiName the patiName to set
    */
-  public void setName(String name) {
-    this.name = name;
+  public void setPatiName(String patiName) {
+    this.patiName = patiName;
   }
 
   /**

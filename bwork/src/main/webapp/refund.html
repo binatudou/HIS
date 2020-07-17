@@ -5,58 +5,55 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
 <body>
-  <div>
-    <label>病历号检索：</label>
-    <input class="easyui-searchbox" name="search-record" id="search-record" prompt='请输入病历号' searcher="search_record" style="width:200px" />
-  </div>
   <table id="dg" title="挂号信息查询" class="easyui-datagrid" style="width:700px;height:250px" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
     <thead>
       <tr>
-        <th field="RecordID">病历号</th>
-        <th field="PatiName">患者姓名</th>
-        <th field="ReseDate">预约日期</th>
-        <th field="DocTime">午别</th>
-        <th field="DeptName">挂号科室</th>
-        <th field="DiagStatus">看诊状态</th>
+        <th field="RecordID" align="center" style="width: 10%;">病历号</th>
+        <th field="PatiName" align="center" style="width: 20%;">患者姓名</th>
+        <th field="ReseDate" align="center" style="width: 20%;">预约日期</th>
+        <th field="DocTime" align="center" style="width: 10%;">午别</th>
+        <th field="DeptName" align="center" style="width: 30%;">挂号科室</th>
+        <th field="DiagStatus" align="center" style="width: 10%;">看诊状态</th>
       </tr>
     </thead>
   </table>
   <div id="toolbar">
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="refund()">退号</a>
+    <label>病历号检索：</label>
+    <input class="easyui-searchbox" name="search-record" id="search-record" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="refund()" style="float:right; width:15%">退号</a>
   </div>
 
   <script>
-    function search_record(value) {
-      var r_list = getRegistration(value);
-      if (r_list) {
-        $("#dg").datagrid({
-          data: r_list
+    function searchRecord(value) {
+      $(function() {
+        var params = {
+          "id": value
+        };
+        $.ajax({
+          type: "GET",
+          contentType: "application/json;charset=UTF-8",
+          url: "refund",
+          data: JSON.stringify(params),
+          dataType: JSON,
+          success: function(rItemList) {
+            if (rItemList.length == 0)
+              alert("未查询到该病历下的挂号记录");
+            else
+              $("#dg").datagrid({
+                data: rItemList
+              });
+          },
+          error: function(e) {
+            console.log(e.status);
+            console.log(e.responseText);
+          }
         });
-      } else {
-        alert("未查询到该病历下的挂号记录");
-      }
-    }
-
-    function getRegistration(value) {
-      //TODO
-      var r_list = new Array();
-      if (value == "1") {
-        r_list[0] = {
-          "RecordID": "1",
-          "PatiName": "病人甲",
-          "ReseDate": "2020-01-01",
-          "DocTime": "上午",
-          "DeptName": "心血管内科",
-          "DiagStatus": "未诊"
-        }
-      }
-      return r_list;
+      });
     }
 
     function refund() {
@@ -69,6 +66,8 @@
             data: []
           });
         });
+      } else {
+        alert("请选中一行记录！")
       }
     }
   </script>

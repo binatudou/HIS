@@ -5,27 +5,37 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
-  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/color.css">
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
   <script>
-    function sendTest() {
+    $(function() {
+      var params = {
+        "id": value
+      };
       $.ajax({
         type: "GET",
-        url: "test",
-        dataType: "text",
-        success: function(message) {
-          alert(message);
+        contentType: "application/json;charset=UTF-8",
+        url: "refund",
+        data: JSON.stringify(params),
+        dataType: JSON,
+        success: function(rItemList) {
+          if (rItemList.length == 0)
+            alert("未查询到该病历下的挂号记录");
+          else
+            $("#dg").datagrid({
+              data: rItemList
+            });
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
         }
       });
-    }
+    });
   </script>
 </head>
 
 <body>
-  <div>
-    <button onclick="sendTest()">发送记录</button>
-  </div>
 </body>
 
 </html>
