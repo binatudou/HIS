@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <table id="dg" title="挂号信息查询" class="easyui-datagrid" style="width:700px;height:250px" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
+  <table id="dg" title="挂号信息查询" class="easyui-datagrid" fit="true" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
     <thead>
       <tr>
         <th field="RegistID" align="center" hidden="true">挂单号</th>
@@ -25,7 +25,7 @@
   </table>
   <div id="toolbar">
     <label>病历号检索：</label>
-    <input class="easyui-searchbox" name="search-record" id="search-record" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
+    <input id="search-record" name="search-record" class="easyui-searchbox" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="doRefund()" style="float:right; width:15%">退号</a>
   </div>
 

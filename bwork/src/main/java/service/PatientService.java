@@ -6,9 +6,9 @@ import bean.Patient;
 import dao.PatientDao;
 
 public class PatientService {
-    public static Patient find(int id) throws SQLException, ClassNotFoundException {
+    public static Patient findByRecordID(int recordID) throws SQLException, ClassNotFoundException {
         PatientDao patiDao = new PatientDao();
-        Patient patient = patiDao.findByRecordID(id);
+        Patient patient = patiDao.findByRecordID(recordID);
         patiDao.close();
         return patient;
     }

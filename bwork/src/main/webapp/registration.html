@@ -7,7 +7,115 @@
   <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+</head>
+
+<body onload="load()">
+  <div class="easyui-panel" fit="true">
+    <div style="padding:10px 60px 20px 60px">
+      <form id="regist-form" method="post">
+        <div style="padding: 10px;">
+          <input id="record-id" name="record-id" class="easyui-textbox" type="number" required="true" validType="number" label="*病历号：" labelAlign="right" data-options="prompt:'输入已使用病历号搜索，或输入未使用病历号以录入', icons:[{
+              iconCls:'icon-search',
+              handler: function(e){
+                searchPatient();
+              }
+            }]" style="width:500px"></input>
+        </div>
+
+        <div style="padding: 10px;">
+          <input id="pati-name" name="pati-name" class="easyui-textbox" type="text" required="true" readonly="true" label="*姓名：" labelAlign="right" style="width:300px;" />
+          <select id="sex" name="sex" class="easyui-combobox" required="true" readonly="true" label="*性别：" labelAlign="right" style="width:200px;">
+            <option value="0" selected>男</option>
+            <option value="1">女</option>
+          </select>
+        </div>
+
+        <div style="padding: 10px;">
+          <input id="birthday" name="birthday" class="easyui-textbox" type="date" required="true" readonly="true" label="*出生日期:" validType="date" style="width:300px;" />
+          <input id="age" name="age" class="easyui-textbox" type="number" required="true" validType="number" readonly="true" label="*年龄：" labelAlign="right" style="width:200px;" />
+        </div>
+
+        <div style="padding: 10px;">
+          <input id="id-number" name="id-number" class="easyui-textbox" type="text" required="true" readonly="true" label="*身份证号:" style="width:300px;" />
+          <input id="pati-address" name="pati-address" class="easyui-textbox" type="text" required="true" readonly="true" label="*家庭住址:" style="width:500px;" />
+        </div>
+
+        <div style="padding: 10px;">
+          <input id="regist-date" name="regist-date" class="easyui-textbox" type="date" required="true" label="*看诊日期:" validType="date" style="width:300px;" />
+          <select id="department" name="department" class="easyui-combobox" required="true" editable="false" editable="false" label="*挂号科室:" data-options="url:'deptFindAll', method:'get', valueField:'id', textField:'deptName'" style="width:300px;"></select>
+        </div>
+
+        <div style="padding: 10px;">
+          <select id="doc-time" name="doc-time" class="easyui-combobox" required="true" editable="false" label="*午别：" labelAlign="right" style="width:300px;">
+            <option value="0" selected>上午</option>
+            <option value="1">下午</option>
+            <option value="2">晚间</option>
+          </select>
+          <select id="doc-level" name="doc-level" class="easyui-combobox" required="true" editable="false" label="*号别：" labelAlign="right" style="width:300px;">
+            <option value="0" selected>普通号</option>
+            <option value="1">专家号</option>
+          </select>
+        </div>
+
+        <div style="padding: 10px;">
+          <select id="doctor" name="doctor" class="easyui-combobox" required="true" editable="false" label="*看诊医生:" data-options="url:'scheSelect', method:'get', valueField:'doctorID', textField:'docName' data=[]" style="width:300px;"></select>
+          <input id="total-number" name="total-number" class="easyui-textbox" readonly="true" label="总号数：" labelAlign="right" style="width:150px;" />
+          <input id="used-number" name="used-number" class="easyui-textbox" readonly="true" label="已用号数：" labelAlign="right" style="width:150px;" />
+        </div>
+
+        <div style="padding: 10px;">
+          <select id="pay-type" name="pay-type" class="easyui-combobox" required="true" editable="false" label="*收费方式:" style="width:300px;">
+            <option value="0" selected>现金</option>
+            <option value="1">刷卡</option>
+          </select>
+          <label for="buy-record">*是否购买病历本：</label>
+          <input id="buy-record" name="buy-record" type="checkbox" style="zoom:150%;vertical-align:middle;" />
+          <input id="total-number" name="total-number" class="easyui-textbox" readonly="true" label="挂号费：" labelAlign="right" style="width:150px;" />
+        </div>
+        </table>
+      </form>
+      <div style="text-align:center;padding:5px">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width: 200px;">挂号</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width: 200px;">清空</a>
+      </div>
+    </div>
+  </div>
+
   <script>
+    //搜索病历号信息
+    function searchPatient() {
+      $.ajax({
+        type: "GET",
+        url: "patiFind",
+        data: {
+          recordID: $("#record-id").textbox("getValue")
+        },
+        dataType: "JSON",
+        success: function(result) {
+          if (result.recordExist == true)
+            alert("未查询到该病历下的挂号记录");
+          else
+            $("#dg").datagrid({
+              data: rItemList
+            });
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
+    }
+
+    //根据病历号录入病人信息
+    function inputPatient(patient) {
+      //TODO
+    }
+
+    //查得新病历号，手动录入病人信息
+    function inputPatient(patient) {
+      //TODO
+    }
+
     //将得到的医生载入复选框中
     function refreshDoctor() {
       //TODO
@@ -17,111 +125,7 @@
         data: doc_arr
       })
     }
-  </script>
-</head>
 
-<body>
-  <div class="easyui-panel" title="New Topic" fit="true">
-    <div style="padding:10px 60px 20px 60px">
-      <form id="regist-form" method="post">
-        <table cellpadding="5">
-          <tr>
-            <td>*病历号:</td>
-            <td><input class="easyui-textbox" type="text" name="record-id" id="record-id" required="true" validType="number" icon="icon-search"></input>
-            </td>
-          </tr>
-          <tr>
-            <td>*姓名:</td>
-            <td><input class="easyui-textbox" type="text" name="name" id="name" required="true"></input>
-            </td>
-            <td>*性别:</td>
-            <td><select name="sex" id="sex" required="true" style="width:100px;">
-                <option value="0" selected>男</option>
-                <option value="1">女</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>*出生日期:</td>
-            <td><input class="easyui-textbox" type="date" name="birthday" id="birthday" required="true" validType="date" style="width:150px;"></input>
-            </td>
-            <td>*年龄:</td>
-            <td><input class="easyui-textbox" type="number" name="age" id="age" required="true" style="width:100px;"></input>
-            </td>
-          </tr>
-          <tr>
-            <td>身份证号:</td>
-            <td><input class="easyui-textbox" type="number" name="id-number" id="id-number"></input>
-            </td>
-            <td>*家庭住址:</td>
-            <td><input class="easyui-textbox" type="text" name="address" id="address" required="true" style="width:280px;"></input>
-            </td>
-          </tr>
-          <tr>
-            <td>*看诊日期:</td>
-            <td><input class="easyui-textbox" type="date" name="regist-date" id="regist-date" required="true"></input>
-            </td>
-          </tr>
-          <tr>
-            <td>*挂号科室:</td>
-            <td>
-              <select name="department" id="department" required="true" onchange="refreshDoctor()" style="width:100px;">
-                <option value="1" selected>心脑血管科</option>
-              </select>
-            </td>
-            <td>*午别:
-              <td>
-                <select name="doc-time" id="doc-time" required="true" onchange="refreshDoctor()" style="width:100px;">
-                <option value="0" selected>上午</option>
-                <option value="1">下午</option>
-                <option value="2">晚间</option>
-              </select>
-              </td>
-          </tr>
-          <tr>
-            <td>*号别:</td>
-            <td>
-              <select name="doc-level" id="doc-level" required="true" onchange="refreshDoctor()" style="width:100px;">
-                <option value="0" selected>普通号</option>
-                <option value="1">专家号</option>
-              </select>
-            </td>
-            <td>*看诊医生:</td>
-            <td>
-              <select name="doctor" id="doctor" required="true" style="width:100px;">
-                <option value="1">郝医生</option>
-              </select>
-            </td>
-            <tr>
-              <td>总号数: 50</td>
-              <td></td>
-              <td>已用号数: 2</td>
-              <td></td>
-            </tr>
-          </tr>
-          <tr>
-            <td>是否购买病历本</td>
-            <td><input name="buy-record" id="buy-record" type="checkbox"></td>
-            <td>*收费方式:</td>
-            <td>
-              <select name="pay-type" id="pay-type" required="true" style="width:100px;">
-                <option value="0" selected>现金</option>
-                <option value="1">刷卡</option>
-              </select>
-            </td>
-            <td>总费用</td>
-            <td><input class="easyui-textbox" type="text" name="total-price" id="total-price" editable="false" value="20"></td>
-          </tr>
-        </table>
-      </form>
-      <div style="text-align:center;padding:5px">
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">挂号</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()">清空</a>
-      </div>
-    </div>
-  </div>
-
-  <script>
     //检查表单，无误则提交挂号单
     function submitForm() {
       if (check_form()) {
@@ -134,7 +138,9 @@
     }
 
     function clearForm() {
-      $('#regist-form').form('clear');
+      $.messager.confirm('确认', '是否退号？', function(r) {
+        $('#regist-form').form('clear');
+      });
     }
 
     //从后台获取该科室、号别、午别下可挂号的医生
@@ -167,7 +173,7 @@
       var birthday = $("#birthday").val();
       if (!birthday) //未输入生日则返回
         return;
-      birthday = birthday.substr(0, 4);
+      birthday = birthday.subsdiv(0, 4);
       var age = (curYear - birthday);
       $("#age").textbox("setValue", age);
     }

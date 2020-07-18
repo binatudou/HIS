@@ -15,13 +15,13 @@ public class Patient {
   }
 
   /**
-   * @param id       患者id
-   * @param recordID 病历号
-   * @param patiName 患者姓名
-   * @param sex      患者性别
-   * @param birthday 患者生日
-   * @param idNumber 患者身份证号(String)
-   * @param patiAddress  患者住址
+   * @param id          患者id
+   * @param recordID    病历号
+   * @param patiName    患者姓名
+   * @param sex         患者性别
+   * @param birthday    患者生日
+   * @param idNumber    患者身份证号(String)
+   * @param patiAddress 患者住址
    */
   public Patient(int id, int recordID, String patiName, int sex, Date birthday, String idNumber, String patiAddress) {
     this.id = id;

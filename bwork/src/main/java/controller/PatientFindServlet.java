@@ -1,13 +1,18 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
 
 import bean.Patient;
 import service.PatientService;
@@ -26,29 +31,18 @@ public class PatientFindServlet extends HttpServlet {
         try {
             request.setCharacterEncoding("UTF-8");
 
-            int id = Integer.parseInt(request.getParameter("recordID"));
-            Patient patient = PatientService.find(id);
+            int recordID = Integer.parseInt(request.getParameter("recordID"));
+            Patient patient = PatientService.findByRecordID(recordID);
             request.setAttribute("patient", patient);
-            request.getRequestDispatcher("department.jsp").forward(request, response);
 
-            // String id = request.getParameter("id");
-            // String department = request.getParameter("department");
-            // String name = request.getParameter("name");
-            // String sex = request.getParameter("sex");
-            // String telephone = request.getParameter("telephone");
-            // String strBirthday = request.getParameter("birthday");
-            // Date birthday = new SimpleDateFormat("yyyy-MM-dd").parse(strBirthday);
+            Map<String, Object> result = new HashMap<>();
 
-            // Member member = new Member();
+            String resultJson = JSON.toJSONString(result);
 
-            // member.setId(Integer.parseInt(id));
-            // member.setDepartment(Integer.parseInt(department));
-            // member.setName(name);
-            // member.setSex(sex);
-            // member.setTelephone(telephone);
-            // member.setBirthday(birthday);
-
-            // MemberService.update(member);
+            PrintWriter writer = response.getWriter();
+            writer.write(resultJson);
+            writer.flush();
+            writer.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
