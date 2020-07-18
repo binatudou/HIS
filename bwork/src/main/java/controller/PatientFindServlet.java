@@ -33,9 +33,19 @@ public class PatientFindServlet extends HttpServlet {
 
             int recordID = Integer.parseInt(request.getParameter("recordID"));
             Patient patient = PatientService.findByRecordID(recordID);
-            request.setAttribute("patient", patient);
 
             Map<String, Object> result = new HashMap<>();
+            if (patient != null) {
+                result.put("recordExist", true);
+                result.put("patiName", patient.getPatiName());
+                result.put("sex", patient.getSex());
+                result.put("birthday", patient.getBirthday());
+                result.put("idNumber", patient.getIdNumber());
+                result.put("patiAddress", patient.getPatiAddress());
+            }
+            else{
+                result.put("recordExist", false);
+            }
 
             String resultJson = JSON.toJSONString(result);
 
@@ -43,6 +53,33 @@ public class PatientFindServlet extends HttpServlet {
             writer.write(resultJson);
             writer.flush();
             writer.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            int recordID = 413;
+            Patient patient = PatientService.findByRecordID(recordID);
+
+            Map<String, Object> result = new HashMap<>();
+            if (patient != null) {
+                result.put("recordExist", true);
+                result.put("patiName", patient.getPatiName());
+                result.put("sex", patient.getSex());
+                result.put("birthday", patient.getBirthday());
+                result.put("idNumber", patient.getIdNumber());
+                result.put("patiAddress", patient.getPatiAddress());
+            }
+            else{
+                result.put("recordExist", false);
+            }
+
+            String resultJson = JSON.toJSONString(result);
+            System.out.println(resultJson);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
