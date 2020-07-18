@@ -9,7 +9,7 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body onload="load()">
+<body>
   <div class="easyui-panel" fit="true">
     <div style="padding:10px 60px 20px 60px">
       <form id="registForm" action="rFormAdd" method="post">
@@ -58,8 +58,7 @@
         </div>
 
         <div style="padding: 10px;">
-          <!-- data-options="url:'scheSelect', method:'get', valueField:'doctorID', textField:'docName' data=[]" -->
-          <select id="doctor" name="doctor" class="easyui-combobox" required="true" editable="false" label="*看诊医生:" style="width:300px;"></select>
+          <select id="doctorSchedule" name="doctorSchedule" class="easyui-combobox" required="true" editable="false" label="*看诊医生:" style="width:300px;"></select>
           <input id="totalNumber" name="totalNumber" class="easyui-textbox" readonly="true" label="总号数：" labelAlign="right" style="width:150px;" />
           <input id="usedNumber" name="usedNumber" class="easyui-textbox" readonly="true" label="已用号数：" labelAlign="right" style="width:150px;" />
         </div>
@@ -83,10 +82,6 @@
   </div>
 
   <script>
-    function load() {
-      //TODO
-    }
-
     //搜索病历号信息
     function searchPatient() {
       var reg = /^\d+$/; // 非负整数
@@ -162,12 +157,35 @@
       });
     }
 
-    //从后台获取该科室、号别、午别下可挂号的医生
-    function getSelectDoctor() {
-      return [{
-        "value": 1,
-        "text": "郝医生"
-      }];
+    //从后台获取该日期、科室、午别、号别下可挂号的医生
+    function searchDoctor() {
+      var registDate = $("#registDate").val();
+      var department = $("#department").combobox("getValue");
+      var docTime = $("#docTime").combobox("getValue");
+      var docLevel = $("#docLevel").combobox("getValue");
+
+      if (registDate == "" || department == null || docTime == null || docLevel == null)
+        return;
+      else {
+        $.ajax({
+          type: "GET",
+          url: "scheFind",
+          data: {
+            registDate: registDate,
+            department: department,
+            docTime: docTime,
+            docLevel: docLevel
+          },
+          dataType: "JSON",
+          success: function(result) {
+            $("#doctorSchedule").combobox("reload", result);
+          },
+          error: function(e) {
+            console.log(e.status);
+            console.log(e.responseText);
+          }
+        });
+      }
     }
 
 
