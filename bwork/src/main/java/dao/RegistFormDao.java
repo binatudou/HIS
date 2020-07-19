@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import bean.RegistForm;
@@ -17,11 +18,42 @@ public class RegistFormDao extends Dao<RegistForm> {
         super();
     }
 
+    public List<RegistForm> findById(int id) throws SQLException {
+        return find(TABLE_NAME, "id", Integer.toString(id));
+    }
+
     public List<RegistForm> findByRecordID(int recordID) throws SQLException {
         return find(TABLE_NAME, "RecordID", Integer.toString(recordID));
     }
 
-    // 执行退号，若对应记录为已看诊则直接返回
+    public List<RegistForm> findByDoctorID(int doctorID) throws SQLException {
+        Statement statement = connection.createStatement();
+        String queryString = "select * from " + TABLE_NAME + " where DoctorID = " + doctorID + " and DiagStatus = 0";
+        ResultSet rs = statement.executeQuery(queryString);
+        List<RegistForm> list = new ArrayList<>();
+        while (rs.next()) {
+            list.add(RSToBean(rs));
+        }
+        rs.close();
+        statement.close();
+        return list;
+    }
+
+    // 执行完诊，若对应记录不为未看诊状态则直接返回
+    public int diagnose(int id) throws SQLException {
+        List<RegistForm> rFormList = find(TABLE_NAME, "id", Integer.toString(id));
+        if (rFormList.isEmpty())
+            return -1;
+        if (rFormList.get(0).getDiagStatus() == 0) {
+            String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + id;
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+        }
+        return rFormList.get(0).getDiagStatus();
+    }
+
+    // 执行退号，若对应记录不为未看诊状态则直接返回
     public int refund(int id) throws SQLException {
         List<RegistForm> rFormList = find(TABLE_NAME, "id", Integer.toString(id));
         if (rFormList.isEmpty())
@@ -43,6 +75,10 @@ public class RegistFormDao extends Dao<RegistForm> {
         AssemblePS(preparedStatement, rForm);
         preparedStatement.executeUpdate();
         preparedStatement.close();
+    }
+
+    public List<RegistForm> doctorSearch(int doctorID) throws SQLException {
+        return find(TABLE_NAME, "DoctorID", String.valueOf(doctorID));
     }
 
     @Override

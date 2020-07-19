@@ -9,11 +9,10 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body class="easyui-layout" fit="true">
-  <div id="p" data-options="region:'west'" title="待诊病人列表" style="width:30%;padding:10px">
-    <ul class="easyui-datalist" lines="true" style="width:100%;height:100%">
-      <li value="1">A先生</li>
-    </ul>
+<body class="easyui-layout" fit="true" onload="load()">
+  <div id="p" data-options="region:'west'" title="病人列表" style="width:30%;padding:10px">
+    <ul id="undiagList" class="easyui-datalist" lines="true" striped="true" textField="patiName" valueField="registID" style="width:100%;height:50%"></ul>
+    <ul id="diagList" class="easyui-datalist" lines="true" striped="true" textField="patiName" valueField="registID" style="width:100%;height:50%"></ul>
   </div>
   <div region="center" border="false" border="false">
     <div class="easyui-tabs" fit="true">
@@ -25,6 +24,29 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function load() {
+      patiLoad();
+    }
+
+    //获取患者名单
+    function patiLoad() {
+      $.ajax({
+        type: "GET",
+        url: "docFindPati",
+        dataType: "JSON",
+        success: function(patiData) {
+          undiagList.datagrid("loadData", patiData.undiagList);
+          diagList.datagrid("loadData", patiData.diagList);
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
+    }
+  </script>
 </body>
 
 </html>

@@ -57,31 +57,4 @@ public class PatientFindServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-
-    // public static void main(String[] args) {
-    //     try {
-    //         int recordID = 5123;
-    //         Patient patient = PatientService.findByRecordID(recordID);
-
-    //         Map<String, Object> result = new HashMap<>();
-    //         if (patient != null) {
-    //             result.put("recordExist", true);
-    //             result.put("patiName", patient.getPatiName());
-    //             result.put("sex", patient.getSex());
-    //             result.put("birthday", patient.getBirthday());
-    //             result.put("idNumber", patient.getIdNumber());
-    //             result.put("patiAddress", patient.getPatiAddress());
-    //         }
-    //         else{
-    //             result.put("recordExist", false);
-    //         }
-
-    //         String resultJson = JSON.toJSONString(result);
-    //         System.out.println(resultJson);
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     } catch (ClassNotFoundException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 }
