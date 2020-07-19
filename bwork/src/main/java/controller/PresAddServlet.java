@@ -13,11 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 
-import bean.Diagnosis;
-import service.DiagnosisService;
+import service.PrescriptionService;
 
-@WebServlet(name = "DiagnoseServlet", urlPatterns = { "/diagnose" })
-public class DiagnoseServlet extends HttpServlet {
+@WebServlet(name = "PresAddServlet", urlPatterns = { "/presAdd" })
+public class PresAddServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -25,24 +24,21 @@ public class DiagnoseServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            String docIDStr = String.valueOf(request.getSession().getAttribute("doctorID"));
+            String doctorID = String.valueOf(request.getSession().getAttribute("doctorID"));
             Map<String, Object> resultMap = new HashMap<>();
-            if (docIDStr == null) {
-                resultMap.put("result", -1);
-            } else {
-                int registID = Integer.parseInt(request.getParameter("registID"));
-                int doctorID = Integer.parseInt(docIDStr);
-                int diseaseID = Integer.parseInt(request.getParameter("diseaseID"));
-                String diseName = request.getParameter("diseName");
-                String diagInfo = request.getParameter("diagInfo");
+            // 无权限开立
+            if (doctorID == null) {
+                resultMap.put("resultCode", -1);
+            } else { //
+                Map<String, String[]> formMap = request.getParameterMap();
+                
+                PrescriptionService.add(formMap, doctorID);
 
-                Diagnosis diag = new Diagnosis(0, registID, doctorID, diseaseID, diseName, diagInfo);
-                int resultCode = DiagnosisService.diagnose(diag);
-
-                resultMap.put("resultCode", resultCode);
+                resultMap.put("resultCode", 0);
 
                 String result = JSON.toJSONString(resultMap);
 

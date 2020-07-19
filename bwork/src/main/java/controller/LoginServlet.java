@@ -25,6 +25,7 @@ public class LoginServlet extends HttpServlet {
         if (userID.equals("admin") && password.equals("123")) {
             request.getSession().setAttribute("user", "admin");
             request.getSession().setAttribute("operatorID", 1);
+            request.getSession().setAttribute("doctorID", 1);
             request.getSession().setAttribute("scheduleID", 1);
             request.getSession().setAttribute("authority", "admin");
             request.getSession().setAttribute("loginSuccess", true);

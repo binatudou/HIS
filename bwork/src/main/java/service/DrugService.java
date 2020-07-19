@@ -3,14 +3,14 @@ package service;
 import java.sql.SQLException;
 import java.util.List;
 
-import bean.Drugs;
-import dao.DrugsDao;
+import bean.Drug;
+import dao.DrugDao;
 
 public class DrugService {
-  public static List<Drugs> drugFindAll() throws SQLException, ClassNotFoundException {
-    DrugsDao drugsDao = new DrugsDao();
-    List<Drugs> drugList = drugsDao.drugFindAll();
-    drugsDao.close();
+  public static List<Drug> drugFindAll() throws SQLException, ClassNotFoundException {
+    DrugDao drugDao = new DrugDao();
+    List<Drug> drugList = drugDao.drugFindAll();
+    drugDao.close();
     return drugList;
   }
 }

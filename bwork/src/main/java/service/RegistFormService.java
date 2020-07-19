@@ -13,11 +13,11 @@ import bean.RegistForm;
 import dao.RegistFormDao;
 
 public class RegistFormService {
-    public static List<RegistForm> findById(int id) throws SQLException, ClassNotFoundException {
+    public static RegistForm findById(int id) throws SQLException, ClassNotFoundException {
         RegistFormDao registDao = new RegistFormDao();
         List<RegistForm> rFormList = registDao.findById(id);
         registDao.close();
-        return rFormList;
+        return rFormList.size() == 1? rFormList.get(0): null;
     }
 
     public static List<RegistForm> findByRecordID(int recordID) throws SQLException, ClassNotFoundException {
@@ -42,13 +42,12 @@ public class RegistFormService {
         List<Map<String, Object>> undiagList = new ArrayList<>();
         List<Map<String, Object>> diagList = new ArrayList<>();
         for (RegistForm rForm : rFormList) {
-            if (rForm.getDiagStatus() == 0){
+            if (rForm.getDiagStatus() == 0) {
                 Map<String, Object> rMap = new HashMap<>();
                 rMap.put("patiName", rForm.getPatiName());
                 rMap.put("registID", rForm.getId());
                 undiagList.add(rMap);
-            }
-            else if (rForm.getDiagStatus() == 1){
+            } else if (rForm.getDiagStatus() == 1) {
                 Map<String, Object> rMap = new HashMap<>();
                 rMap.put("patiName", rForm.getPatiName());
                 rMap.put("registID", rForm.getId());
@@ -93,10 +92,36 @@ public class RegistFormService {
         rFormDao.close();
     }
 
+    /**
+     * 执行退号，返回执行前挂号单的挂号状态
+     * 
+     * @param id
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static int refund(int id) throws SQLException, ClassNotFoundException {
         RegistFormDao rFormDao = new RegistFormDao();
         int result = rFormDao.refund(id);
         rFormDao.close();
         return result;
+    }
+
+    /**
+     * 执行完诊，返回执行前挂号单的挂号状态
+     * @param id
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static int diagnose(int id) throws SQLException, ClassNotFoundException {
+        RegistFormDao rFormDao = new RegistFormDao();
+        int result = rFormDao.diagnose(id);
+        rFormDao.close();
+        return result;
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        RegistFormService.docFindPati(1);
     }
 }

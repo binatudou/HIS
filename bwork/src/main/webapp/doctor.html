@@ -19,17 +19,17 @@
       <div title="看诊">
         <iframe id="registration-frame" width="100%" height="99%" src="diagnose.html" frameborder="0"></iframe>
       </div>
-      <!-- <div title="开药">
+      <div title="开药">
         <iframe id="refund-frame" width="100%" height="99%" src="prescription.html" frameborder="0"></iframe>
-      </div> -->
+      </div>
     </div>
   </div>
 
   <script>
-    var selectedID;
+    var selectedPatient;
 
     function load() {
-      //初始化datalist
+      //初始化病人列表
       $('#undiagList').datalist({
         striped: "true",
         title: "未诊病人",
@@ -38,7 +38,7 @@
         textField: 'patiName',
         singleSelect: true,
         onSelect: function(index, rowData) {
-          selectedID = rowData.registID;
+          selectedPatient = rowData;
           $('#diagList').datalist("unselectAll");
         }
       });
@@ -56,9 +56,6 @@
       });
 
       patiLoad();
-      /*
-      
-      */
     }
 
     //获取患者名单

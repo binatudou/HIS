@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import bean.RegistForm;
@@ -27,16 +26,7 @@ public class RegistFormDao extends Dao<RegistForm> {
     }
 
     public List<RegistForm> findByScheduleID(int scheduleID) throws SQLException {
-        Statement statement = connection.createStatement();
-        String queryString = "select * from " + TABLE_NAME + " where ScheduleID = " + scheduleID + " and DiagStatus = 0";
-        ResultSet rs = statement.executeQuery(queryString);
-        List<RegistForm> list = new ArrayList<>();
-        while (rs.next()) {
-            list.add(RSToBean(rs));
-        }
-        rs.close();
-        statement.close();
-        return list;
+        return find(TABLE_NAME, "ScheduleID", Integer.toString(scheduleID));
     }
 
     // 执行完诊，若对应记录不为未看诊状态则直接返回

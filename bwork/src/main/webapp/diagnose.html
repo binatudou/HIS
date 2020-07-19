@@ -9,91 +9,141 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body onload="load();">
+<body onload="load()">
   <div style="width:100%; height: 200px; padding: 20px;">
     <div>
-      <label>病种搜索：</label>
-      <input id="diseSearch" class="easyui-textbox" prompt="请输入病种助记码" style="width:200px">
+      <label>病种检索：</label>
+      <input id="diseSearch" class="easyui-textbox" prompt="请输入病种助记码" style="width:200px; height: 30px;">
     </div>
-    <div id="diseList" style="width:100%;height:150px"></div>
+    <div id="diseList" style="width:100%;height:130px"></div>
   </div>
 
   <div style="width: 100%; padding: 20px;">
-    <input class="easyui-textbox" name="diagnose" id="diagnose" prompt="在此输入诊断" multiline="true" style="width:100%;height:300px;">
+    <input id="diagInfo" class="easyui-textbox" prompt="在此输入诊断" multiline="true" style="width:100%;height:200px;">
   </div>
 
   <div style="text-align:center;padding:5px">
-    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="diagnosed()">完诊</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="diagnose()" style="width: 15%;">完诊</a>
   </div>
 
   <script>
-    var diseases_info;
-    var selectedDiseID;
+    var diseases;
+    var selectedDisease;
     var diseList = $('#diseList');
     var diseSearch = $("#diseSearch");
+    var diagInfo = $("#diagInfo");
 
     function load() {
+      //获取疾病信息
+      $.ajax({
+        url: 'diseFindAll',
+        type: 'GET',
+        dataType: 'JSON',
+        success: function(result) {
+          diseases = result;
+          //diseList加载疾病
+          diseList.datalist({
+            data: diseases
+          });
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
       //疾病列表
       diseList.datalist({
-        url: "diseFindAll",
-        method: "post",
         striped: "true",
         valueField: 'diseaseID',
         textField: 'diseName',
         singleSelect: true,
         onSelect: function(index, rowData) {
-          selectedDiseID = rowData.diseaseID;
+          selectedDisease = rowData;
         }
       });
-      //疾病备份
-      diseases_info = diseList.datalist("getData");
-      //test
-      alert(diseases_info);
-      //test
       //疾病查询框
       diseSearch.textbox({
         onChange: function(n, o) {
-
+          search_disease();
         }
       });
     }
 
     //提交诊断信息，并清空界面
-    function diagnosed() {
-      $("diagnose-form").form("submit");
-      alert("提交成功");
-      $("#diagnose").textbox("setValue", "");
-      $("#diseSearch").textbox("setValue", "");
-      search_disease();
+    function diagnose() {
+      var rID = window.parent.selectedPatient.registID;
+      //doctorID从session中取得
+      var dID = selectedDisease.diseaseID;
+      var dName = selectedDisease.diseName;
+      var dInfo = diagInfo.textbox("getValue");
+      $.ajax({
+        url: 'diagnose',
+        type: 'POST',
+        data: {
+          registID: rID,
+          diseaseID: dID,
+          diseName: dName,
+          diagInfo: dInfo
+        },
+        success: function(result) {
+          result = jQuery.parseJSON(result);
+          switch (result.resultCode) {
+            case -1:
+              alert("完诊失败：权限不足");
+              break;
+
+            case 0:
+              alert("完诊成功");
+              //更新病人列表
+              window.parent.patiLoad();
+              break;
+
+            case 1:
+              alert("完诊失败：患者已完诊");
+              break;
+
+            case 2:
+              alert("完诊失败：患者已退号");
+              break;
+
+            default:
+              alert("发生未知错误");
+              break;
+          }
+          clear();
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
     }
 
     //键入时根据疾病助记码查找并填入
     function search_disease() {
-      var keyword = $("input", $("#diseSearch").next("span")).val();
+      var keyword = diseSearch.textbox("getValue");
       var reg = new RegExp(keyword);
-      var dise_arr = new Array();
-      var dise_list = $("#dise-list");
+      var diseArr = new Array();
 
-      diseases_info.forEach(disease => {
-        if (reg.test(disease.DiseaseCode)) {
-          dise_arr.push({
-            "value": disease.id,
-            "text": disease.DiseaseName
-          });
+      diseases.forEach(disease => {
+        if (reg.test(disease.diseCode)) {
+          diseArr.push(disease);
         }
       });
 
-      dise_list.datagrid({
-        data: dise_arr
+      diseList.datalist({
+        data: diseArr
       });
     }
 
-    //绑定输入框
-    $(function() {
-      $("input", $("#diseSearch").next("span")).keyup(function() {
-        search_disease();
+    //重置诊断界面
+    function clear() {
+      diseSearch.textbox("setValue", "");
+      diseList.datalist({
+        data: diseases
       });
-    });
+      diagInfo.textbox("setValue", "");
+    }
   </script>
 </body>
 

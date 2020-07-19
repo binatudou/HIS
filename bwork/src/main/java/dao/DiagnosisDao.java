@@ -13,7 +13,7 @@ public class DiagnosisDao extends Dao<Diagnosis> {
     }
 
     public void insert(Diagnosis diagnosis) throws SQLException {
-        String sql = "insert into " + TABLE_NAME + " (id, RecordID, DoctorID, DiseaseID, DiseName, DiagInfo)"
+        String sql = "insert into " + TABLE_NAME + " (id, RegistID, DoctorID, DiseaseID, DiseName, DiagInfo)"
                 + " values (NULL, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         AssemblePS(preparedStatement, diagnosis);
