@@ -13,7 +13,7 @@
     }
     else{
     response.setStatus(response.SC_MOVED_TEMPORARILY);
-    response.setHeader("Location", "doctor.html");
+    response.setHeader("Location", "admin.html");
     }
 %>
 </body>

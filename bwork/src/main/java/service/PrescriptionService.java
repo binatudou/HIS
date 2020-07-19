@@ -87,19 +87,19 @@ public class PrescriptionService {
         return result;
     }
 
-    // /**
-    // * 执行退号，返回执行前挂号单的挂号状态
-    // *
-    // * @param id
-    // * @return
-    // * @throws SQLException
-    // * @throws ClassNotFoundException
-    // */
-    // public static int refund(int id) throws SQLException, ClassNotFoundException
-    // {
-    // PrescriptionDao presDao = new PrescriptionDao();
-    // int result = presDao.refund(id);
-    // presDao.close();
-    // return result;
-    // }
+    /**
+    * 执行退号，返回执行前挂号单的挂号状态
+    *
+    * @param id
+    * @return
+    * @throws SQLException
+    * @throws ClassNotFoundException
+    */
+    public static int presPay(int id) throws SQLException, ClassNotFoundException
+    {
+    PrescriptionDao presDao = new PrescriptionDao();
+    int result = presDao.presPay(id);
+    presDao.close();
+    return result;
+    }
 }

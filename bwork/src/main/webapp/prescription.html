@@ -29,8 +29,8 @@
 
   <div id="toolbar">
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addDrug()">添加药品</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="deleteDrug()">删除药品</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="updateDrug()">修改药品</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteDrug()">删除药品</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="updateDrug()">修改药品</a>
   </div>
 
   <!-- 药品添加窗口 -->
@@ -142,7 +142,7 @@
       var preName = presName;
       //creationTime由service获取
       var tPrice = calTotalPrice();
-      var itemData = $('#presDG').datagrid('getData').data;
+      var itemData = $('#presDG').datagrid('getData').rows;
 
       //检查处方
       var drugItems = $('#presDG').datagrid('getData');
@@ -216,7 +216,7 @@
             drugNumber: $("input", $("#drugNumber").next("span")).val(),
             description: $("input", $("#description").next("span")).val(),
           }
-          //若选中则为update
+          //若选中则为update，未选中则为add
         var row = $('#presDG').datagrid('getSelected');
         if (row) {
           var i = $('#presDG').datagrid("getRowIndex", row);
@@ -264,7 +264,7 @@
 
     //计算处方总价
     function calTotalPrice() {
-      var drugs = $('#presDG').datagrid('getData').data;
+      var drugs = $('#presDG').datagrid('getData').rows;
       var price = 0;
       for (let index = 0; index < drugs.length; index++) {
         const drug = drugs[index];
