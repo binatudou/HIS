@@ -16,15 +16,13 @@ public class ScheduleDao extends Dao<Schedule> {
         super();
     }
 
-    public List<Schedule> searchSchedule(Date workDate, int departmentID, int docTime, int docLevel)
+    public List<Schedule> searchSchedule(Date workDate, int departmentID, int workTime, int docLevel)
             throws SQLException {
         Statement statement = connection.createStatement();
-        String queryString = "select * from " + TABLE_NAME + " where WorkDate = " + workDate.toString()
-                + " and DepartmentID = " + departmentID + " and DocTime = " + docTime + " and DocLevel = " + docLevel;
+        String queryString = "select * from " + TABLE_NAME + " where WorkDate = '" + workDate.toString()
+                + "' and DepartmentID = " + departmentID + " and WorkTime = " + workTime + " and DocLevel = "
+                + docLevel;
 
-        //test
-        System.out.println(queryString);
-        //test
         ResultSet rs = statement.executeQuery(queryString);
         List<Schedule> list = new ArrayList<>();
         while (rs.next()) {
@@ -33,6 +31,14 @@ public class ScheduleDao extends Dao<Schedule> {
         rs.close();
         statement.close();
         return list;
+    }
+
+    public Schedule find(int scheduleID) throws SQLException {
+        List<Schedule> scheList = find(TABLE_NAME, "id", String.valueOf(scheduleID));
+        if (scheList.isEmpty())
+            return null;
+        else
+            return scheList.get(0);
     }
 
     @Override
@@ -47,7 +53,8 @@ public class ScheduleDao extends Dao<Schedule> {
         int totalNumber = rs.getInt("TotalNumber");
         int usedNumber = rs.getInt("UsedNumber");
 
-        Schedule schedule = new Schedule(id, doctorID, departmentID, docName, docLevel, workDate, workTime, totalNumber, usedNumber);
+        Schedule schedule = new Schedule(id, doctorID, departmentID, docName, docLevel, workDate, workTime, totalNumber,
+                usedNumber);
 
         return schedule;
     }

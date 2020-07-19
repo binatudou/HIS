@@ -9,10 +9,10 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body>
+<body onload="load()">
   <div class="easyui-panel" fit="true">
     <div style="padding:10px 60px 20px 60px">
-      <form id="registForm" action="rFormAdd" method="post">
+      <form id="registForm" class="easyui-form">
         <div style="padding: 10px;">
           <input id="recordID" name="recordID" class="easyui-textbox" required="true" validType="number" label="*病历号：" labelAlign="right" data-options="prompt:'输入已使用病历号搜索，或输入未使用病历号以录入', icons:[{
               iconCls:'icon-search',
@@ -46,7 +46,7 @@
         </div>
 
         <div style="padding: 10px;">
-          <select id="docTime" name="docTime" class="easyui-combobox" required="true" editable="false" label="*午别：" labelAlign="right" style="width:300px;">
+          <select id="docTime" name="docTime" class="easyui-combobox" required="true" editable="false" label="*午别：" labelAlign="right" onSelect="" style="width:300px;">
             <option value="0" selected>上午</option>
             <option value="1">下午</option>
             <option value="2">晚间</option>
@@ -58,7 +58,7 @@
         </div>
 
         <div style="padding: 10px;">
-          <select id="doctorSchedule" name="doctorSchedule" class="easyui-combobox" required="true" editable="false" label="*看诊医生:" style="width:300px;"></select>
+          <select id="doctorSchedule" name="doctorSchedule" class="easyui-combobox" required="true" editable="false" label="*看诊医生:" data-options=" valueField:'scheduleID', textField:'docName'" style="width:300px;"></select>
           <input id="totalNumber" name="totalNumber" class="easyui-textbox" readonly="true" label="总号数：" labelAlign="right" style="width:150px;" />
           <input id="usedNumber" name="usedNumber" class="easyui-textbox" readonly="true" label="已用号数：" labelAlign="right" style="width:150px;" />
         </div>
@@ -82,27 +82,97 @@
   </div>
 
   <script>
+    var levelPriceData = [];
+
+    function load() {
+      //从服务器获取号价
+      $.ajax({
+        type: 'GET',
+        url: 'lPriceFindAll',
+        dataType: 'JSON',
+        success: function(result) {
+          levelPriceData = result;
+          //重置总价
+          var docLevel = $('#docLevel').combobox('getValue');
+          var buyRecord = $('#buyRecord')[0].checked;
+          calTotalPrice(docLevel, buyRecord);
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
+
+      //绑定函数
+      $('#registDate').textbox({
+        onChange: function(r) {
+          var department = $('#department').combobox('getValue');
+          var docTime = $('#docTime').combobox('getValue');
+          var docLevel = $('#docLevel').combobox('getValue');
+          refreshDoctor(department, docTime, docLevel);
+        }
+      });
+      $('#department').combobox({
+        onSelect: function(n) {
+          var department = n.id;
+          var docTime = $('#docTime').combobox('getValue');
+          var docLevel = $('#docLevel').combobox('getValue');
+          refreshDoctor(department, docTime, docLevel);
+        }
+      });
+      $('#docTime').combobox({
+        onSelect: function(n) {
+          var department = $('#department').combobox('getValue');
+          var docTime = n.value;
+          var docLevel = $('#docLevel').combobox('getValue');
+          refreshDoctor(department, docTime, docLevel);
+        }
+      });
+      $('#docLevel').combobox({
+        onSelect: function(n) {
+          var department = $('#department').combobox('getValue');
+          var docTime = $('#docTime').combobox('getValue');
+          var docLevel = n.value;
+          refreshDoctor(department, docTime, docLevel);
+
+          var buyRecord = $('#buyRecord')[0].checked;
+          calTotalPrice(docLevel, buyRecord);
+        }
+      });
+      $('#buyRecord')[0].onclick = function() {
+        var docLevel = $('#docLevel').combobox('getValue');
+        var buyRecord = $('#buyRecord')[0].checked;
+        calTotalPrice(docLevel, buyRecord);
+      };
+      $('#doctorSchedule').combobox({
+        onSelect: function(n) {
+          var scheduleID = n.scheduleID;
+          getRegistNumber(scheduleID);
+        }
+      })
+    }
+
     //搜索病历号信息
     function searchPatient() {
       var reg = /^\d+$/; // 非负整数
-      var rid = $("#recordID").textbox("getValue");
+      var rid = $('#recordID').textbox('getValue');
       if (reg.test(rid)) {
         $.ajax({
-          type: "GET",
-          url: "patiFind",
+          type: 'GET',
+          url: 'patiFind',
           data: {
             recordID: rid
           },
-          dataType: "JSON",
+          dataType: 'JSON',
           success: function(result) {
             if (result.recordExist == true) {
               //根据病历号录入病人信息
-              $("#registForm").form("load", result);
+              $('#registForm').form('load', result);
               //自动计算年龄
               calAge();
             } else {
               //查得新病历号，手动录入病人信息
-              alert("未查询到该病历下的挂号记录，启动手动录入模式");
+              alert('未查询到该病历下的挂号记录，启动手动录入模式');
               $('#patiName').textbox('readonly', false);
               $('#sex').textbox('readonly', false);
               $('#birthday').textbox('readonly', false);
@@ -116,69 +186,36 @@
           }
         });
       } else {
-        alert("请输入正确格式病历号");
+        alert('请输入正确格式病历号');
       }
     }
 
-    //将得到的医生载入复选框中
-    function refreshDoctor() {
-      //TODO
-      alert("1")
-      var doc_arr = getSelectDoctor();
-      $("#doctor").combobox({
-        data: doc_arr
-      })
-    }
 
-    //检查表单，无误则提交挂号单
-    function submitForm() {
-      var regOfRecordId = /^\d+$/; // 非负整数
-      var regOfIdNumber = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/; //身份证号（15/18位）
+    //从后台获取该日期、科室、午别、号别下可挂号的医生，并刷新医生选框
+    function refreshDoctor(department, docTime, docLevel) {
+      var registDate = $('#registDate').val();
 
-      var recordID = $("#recordID").val();
-      var idNumber = $("#idNumber").val();
-
-      if (recordID == null || !regOfRecordId.test(recordID))
-        alert("提交失败：病历号格式错误");
-      else if (idNumber != "" && !regOfIdNumber.test(idNumber))
-        alert("提交失败：身份证号格式错误");
-      else {
-        $('#registForm').submit(function(message) {
-          console.log(message);
-        });
-        $('#registForm').form('clear');
-        alert("挂号成功");
-      }
-    }
-
-    function clearForm() {
-      $.messager.confirm('确认', '是否退号？', function(r) {
-        $('#registForm').form('clear');
-      });
-    }
-
-    //从后台获取该日期、科室、午别、号别下可挂号的医生
-    function searchDoctor() {
-      var registDate = $("#registDate").val();
-      var department = $("#department").combobox("getValue");
-      var docTime = $("#docTime").combobox("getValue");
-      var docLevel = $("#docLevel").combobox("getValue");
-
-      if (registDate == "" || department == null || docTime == null || docLevel == null)
+      if (registDate == "" || department == "" || docTime == null || docLevel ==
+        null)
         return;
       else {
         $.ajax({
-          type: "GET",
-          url: "scheFind",
+          type: 'GET',
+          url: 'scheSelect',
           data: {
             registDate: registDate,
             department: department,
             docTime: docTime,
             docLevel: docLevel
           },
-          dataType: "JSON",
+          dataType: 'JSON',
           success: function(result) {
-            $("#doctorSchedule").combobox("reload", result);
+            $('#doctorSchedule').combobox('loadData', result);
+            //清空医生框，若result不为空则置第一个为被选中
+            $('#doctorSchedule').combobox('clear');
+            if (result.length > 0) {
+              $('#doctorSchedule').combobox('select', result[0].scheduleID);
+            }
           },
           error: function(e) {
             console.log(e.status);
@@ -188,62 +225,110 @@
       }
     }
 
-
-    //计算总价
-    function calTotalPrice() {
-      var doc_price = $("#docLevel").combobox("getValue") == 0 ? 20 : 50;
-      var record_price = $("#buyRecord").get(0).checked ? 1 : 0;
-      var total_price = doc_price + record_price;
-      $("#totalPrice").textbox("setValue", total_price);
+    //获取医生对应时段总号及剩余号
+    function getRegistNumber(sID) {
+      $.ajax({
+        type: 'GET',
+        url: 'scheFind',
+        data: {
+          scheduleID: sID
+        },
+        dataType: 'JSON',
+        success: function(result) {
+          if (result.totalNumber != null && result.usedNumber != null) {
+            $('#totalNumber').textbox('setValue', result.totalNumber);
+            $('#usedNumber').textbox('setValue', result.usedNumber);
+          }
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
     }
 
-    //出生日期计算年龄
+    //计算总价
+    function calTotalPrice(docLevel, buyRecord) {
+      //从数据中取相应号费
+      var docPrice;
+      for (let index = 0; index < levelPriceData.length; index++) {
+        const lPrice = levelPriceData[index];
+        if (docLevel == lPrice.levelCode) {
+          docPrice = lPrice.levelPrice;
+          break;
+        }
+      }
+      //判断是否取得值
+      if (docPrice == undefined) return;
+      var totalPrice = docPrice + buyRecord;
+      $('#totalPrice').textbox('setValue', totalPrice);
+    }
+
+    //计算年龄
     function calAge() {
       var curDate = new Date();
       var curYear = curDate.getFullYear();
-      var birthday = $("#birthday").val();
+      var birthday = $('#birthday').val();
       if (!birthday) //未输入生日则返回
         return;
       birthday = birthday.substring(0, 4);
       var age = (curYear - birthday);
-      $("#age").textbox("setValue", age);
+      $('#age').textbox('setValue', age);
     }
 
-    // //绑定年龄计算函数
-    // $(function() {
-    //   $("input", $("#birthday").next("span")).blur(function() {
-    //     calAge();
-    //   });
-    // });
-    // //绑定总价计算函数
-    // $(function() {
-    //   $("input", $("#docLevel").next("span")).blur(function() {
-    //     calTotalPrice();
-    //     selectDoctor();
-    //   });
-    // });
-    // $(function() {
-    //   $("#buyRecord").click(function() {
-    //     calTotalPrice();
-    //   });
-    // });
+    //检查表单，无误则提交表单
+    function submitForm() {
+      $('#registForm').form('submit', {
+        url: "regist",
+        method: "post",
+        onSubmit: function() {
+          if (!$('#registForm').form('enableValidation').form('validate')) {
+            alert("请填写所有表单必选项");
+            return false;
+          }
+          var regOfInteger = /^\d+$/; // 非负整数
+          var regOfIdNumber = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/; //身份证号（15/18位）
 
-    // //绑定选择医生函数
-    // $(function() {
-    //   $("input", $("#registDate").next("span")).blur(function() {
-    //     selectDoctor();
-    //   });
-    // });
-    // $(function() {
-    //   $("input", $("#docTime").next("span")).blur(function() {
-    //     selectDoctor();
-    //   });
-    // });
-    // $(function() {
-    //   $("input", $("#department").next("span")).blur(function() {
-    //     selectDoctor();
-    //   });
-    // });
+          var recordID = $('#recordID').textbox('getValue');
+          var idNumber = $('#idNumber').textbox('getValue');
+          var age = $('#age').textbox('getValue');
+          var totalNumber = $('#totalNumber').textbox('getValue');
+          var usedNumber = $('#usedNumber').textbox('getValue');
+
+          if (recordID == null || !regOfInteger.test(recordID)) {
+            alert('提交失败：病历号格式错误');
+            return false;
+          } else if (idNumber != "" && !regOfIdNumber.test(idNumber)) {
+            alert('提交失败：身份证号格式错误');
+            return false;
+          } else if (age != "" && !regOfInteger.test(age)) {
+            alert('提交失败：年龄不能为负数');
+            return false;
+          } else if (totalNumber == usedNumber) {
+            alert('提交失败：未选择医生或该医生本时段已挂满');
+            return false;
+          }
+          return true;
+        },
+        success: function(data) {
+          if (data.success) {
+            alert("提交成功");
+            $('#registForm').form('clear');
+          }
+        },
+        error: function(e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      });
+    }
+
+    //清空表单
+    function clearForm() {
+      $.messager.confirm('确认', '是否清空表单？', function(r) {
+        $('#registForm').form('clear');
+      });
+    }
   </script>
 </body>
 

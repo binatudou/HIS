@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,19 +17,14 @@ public class PatientDao extends Dao<Patient> {
         super();
     }
 
-    public Patient findByRecordID(int recordID) throws SQLException {
-        List<Patient> patiList = find(TABLE_NAME, "RecordID", Integer.toString(recordID));
-        if (patiList.isEmpty())
-            return null;
-
-        Patient patient = patiList.get(0);
-        return patient;
+    public List<Patient> findByRecordID(int recordID) throws SQLException {
+        return find(TABLE_NAME, "RecordID", Integer.toString(recordID));
     }
 
-    public ArrayList<Patient> findAll() throws SQLException {
+    public List<Patient> findAll() throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("select  from " + TABLE_NAME);
-        ArrayList<Patient> list = new ArrayList<>();
+        List<Patient> list = new ArrayList<>();
         while (rs.next()) {
             list.add(RSToBean(rs));
         }
@@ -39,7 +33,7 @@ public class PatientDao extends Dao<Patient> {
         return list;
     }
 
-    public void add(Patient patient) throws SQLException {
+    public void insert(Patient patient) throws SQLException {
         String sql = "insert into " + TABLE_NAME + " (id, RecordID, PatiName, Sex, Birthday, IdNumber, PatiAddress) "
                 + "values (NULL, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -70,20 +64,6 @@ public class PatientDao extends Dao<Patient> {
         preparedStatement.setDate(4, patient.getBirthday());
         preparedStatement.setString(5, patient.getIdNumber());
         preparedStatement.setString(6, patient.getPatiAddress());
-    }
-
-    public static void main(String[] args) {
-    try {
-    PatientDao pDao = new PatientDao();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    java.util.Date uDate = sdf.parse("2000-01-01");
-    Date sqlDate = new Date(uDate.getTime());
-    Patient patient = new Patient(0, 413, "测试413", 0, sqlDate, "18", "测试地址");
-    pDao.add(patient);
-    pDao.close();
-    } catch (Exception e) {
-    e.printStackTrace();
-    }
     }
 }
 

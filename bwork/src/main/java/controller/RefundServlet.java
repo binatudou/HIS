@@ -49,10 +49,6 @@ public class RefundServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // 解决中文乱码
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/javascript;charset=utf-8");
-
             List<Map<String, Object>> rItemList = new ArrayList<>();
 
             int recordID = Integer.parseInt(request.getParameter("RecordID"));

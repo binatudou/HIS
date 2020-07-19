@@ -13,6 +13,11 @@ public class DepartmentDao extends Dao<Department> {
         super();
     }
 
+    public Department deptFind(int id) throws SQLException {
+        List<Department> deptList = find(TABLE_NAME, "id", String.valueOf(id));
+        return deptList.isEmpty()? null: deptList.get(0);
+    }
+
     public List<Department> deptFindAll() throws SQLException {
         return findAll(TABLE_NAME);
     }
@@ -25,8 +30,8 @@ public class DepartmentDao extends Dao<Department> {
         int deptCategoryID = rs.getInt("DeptCategoryID");
         int deptType = rs.getInt("DeptType");
 
-        Department patient = new Department(id, deptCode, deptName, deptCategoryID, deptType);
+        Department department = new Department(id, deptCode, deptName, deptCategoryID, deptType);
 
-        return patient;
+        return department;
     }
 }

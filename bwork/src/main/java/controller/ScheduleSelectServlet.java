@@ -2,8 +2,11 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,8 +20,8 @@ import com.alibaba.fastjson.JSON;
 import bean.Schedule;
 import service.ScheduleService;
 
-@WebServlet(name = "ScheduleFindServlet", urlPatterns = { "/scheFind" })
-public class ScheduleFindServlet extends HttpServlet {
+@WebServlet(name = "ScheduleSelectServlet", urlPatterns = { "/scheSelect" })
+public class ScheduleSelectServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -29,25 +32,25 @@ public class ScheduleFindServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            int scheduleID = Integer.parseInt(request.getParameter("scheduleID"));
+            Date registDate = Date.valueOf(request.getParameter("registDate"));
+            int departmentID = Integer.parseInt(request.getParameter("department"));
+            int docTime = Integer.parseInt(request.getParameter("docTime"));
+            int docLevel = Integer.parseInt(request.getParameter("docLevel"));
 
-            Schedule schedule = ScheduleService.find(scheduleID);
+            List<Schedule> scheList = ScheduleService.searchSchedule(registDate, departmentID, docTime, docLevel);
 
-            Map<String, Object> scheOption = new HashMap<>();
+            List<Map<String, Object>> scheOptionList = new ArrayList<>();
 
-            if (schedule != null) {
-                scheOption.put("scheduleID", scheduleID);
-                scheOption.put("doctorID", schedule.getDoctorID());
-                scheOption.put("departmentID", schedule.getDepartmentID());
+            for (Schedule schedule : scheList) {
+                Map<String, Object> scheOption = new HashMap<>();
+
+                scheOption.put("scheduleID", schedule.getId());
                 scheOption.put("docName", schedule.getDocName());
-                scheOption.put("docLevel", schedule.getDocLevel());
-                scheOption.put("workDate", schedule.getWorkDate());
-                scheOption.put("workTime", schedule.getWorkTime());
-                scheOption.put("totalNumber", schedule.getTotalNumber());
-                scheOption.put("usedNumber", schedule.getUsedNumber());
+
+                scheOptionList.add(scheOption);
             }
 
-            String resultJson = JSON.toJSONString(scheOption);
+            String resultJson = JSON.toJSONString(scheOptionList);
 
             PrintWriter writer = response.getWriter();
             writer.write(resultJson);

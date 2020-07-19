@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 
-import bean.Department;
-import service.DepartmentService;
+import bean.LevelPrice;
+import service.LevelPriceService;
 
-@WebServlet(name = "DeptFindAllServlet", urlPatterns = { "/deptFindAll" })
-public class DeptFindAllServlet extends HttpServlet {
+@WebServlet(name = "LevelPriceFindAllServlet", urlPatterns = { "/lPriceFindAll" })
+public class LevelPriceFindAllServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -30,23 +30,24 @@ public class DeptFindAllServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Map<String, Object>> deptOptionList = new ArrayList<>();
+            List<Map<String, Object>> lPriceDataList = new ArrayList<>();
 
-            //获取表中全部数据
-            List<Department> deptList = DepartmentService.deptFindAll();
-            for (Department department : deptList) {
-                Map<String, Object> deptOption = new HashMap<>();
+            // 获取表中全部数据
+            List<LevelPrice> lPriceList = LevelPriceService.lPriceFindAll();
+            for (LevelPrice lPrice : lPriceList) {
+                Map<String, Object> lPriceData = new HashMap<>();
 
-                deptOption.put("id", department.getId());
-                deptOption.put("deptName", department.getDeptName());
+                lPriceData.put("id", lPrice.getId());
+                lPriceData.put("levelCode", lPrice.getLevelCode());
+                lPriceData.put("levelPrice", lPrice.getLevelPrice());
 
-                deptOptionList.add(deptOption);
+                lPriceDataList.add(lPriceData);
             }
 
-            String deptOptionJson = JSON.toJSONString(deptOptionList);
+            String lPriceDataJson = JSON.toJSONString(lPriceDataList);
 
             PrintWriter writer = response.getWriter();
-            writer.write(deptOptionJson);
+            writer.write(lPriceDataJson);
             writer.flush();
             writer.close();
         } catch (Exception e) {

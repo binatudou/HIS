@@ -21,10 +21,6 @@ public class TestServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // 解决中文乱码
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/javascript;charset=utf-8");
-
             PrintWriter writer = response.getWriter();
             writer.write("已接受请求");
             writer.flush();

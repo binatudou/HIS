@@ -15,4 +15,12 @@ public class ScheduleService {
         scheDao.close();
         return scheList;
     }
+
+    public static Schedule find(int scheduleID)
+            throws SQLException, ClassNotFoundException {
+        ScheduleDao scheDao = new ScheduleDao();
+        Schedule schedule = scheDao.find(scheduleID);
+        scheDao.close();
+        return schedule;
+    }
 }

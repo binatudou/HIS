@@ -29,10 +29,6 @@ public class PatientFindServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // 解决中文乱码
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/javascript;charset=utf-8");
-
             int recordID = Integer.parseInt(request.getParameter("recordID"));
             Patient patient = PatientService.findByRecordID(recordID);
 

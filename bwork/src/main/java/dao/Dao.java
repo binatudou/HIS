@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dao<T> {
+public class Dao<T>{
     protected Connection connection = null;
 
     public Dao() throws ClassNotFoundException, SQLException {

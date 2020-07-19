@@ -13,4 +13,11 @@ public class DepartmentService {
         deptDao.close();
         return deptList;
     }
+
+    public static Department deptFind(int id) throws SQLException, ClassNotFoundException {
+        DepartmentDao deptDao = new DepartmentDao();
+        Department department = deptDao.deptFind(id);
+        deptDao.close();
+        return department;
+    }
 }
