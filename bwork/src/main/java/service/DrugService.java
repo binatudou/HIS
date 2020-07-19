@@ -9,8 +9,8 @@ import dao.DrugsDao;
 public class DrugService {
   public static List<Drugs> drugFindAll() throws SQLException, ClassNotFoundException {
     DrugsDao drugsDao = new DrugsDao();
-    List<Drugs> lPriceList = drugsDao.drugFindAll();
+    List<Drugs> drugList = drugsDao.drugFindAll();
     drugsDao.close();
-    return lPriceList;
+    return drugList;
   }
 }

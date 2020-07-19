@@ -25,12 +25,12 @@ public class DocFindPatiServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
-      int doctorID = Integer.parseInt(String.valueOf(request.getSession().getAttribute("doctorID")));
-      Map<String, Object> rFormMap = RegistFormService.docFindPati(doctorID);
+      int scheduleID = Integer.parseInt(String.valueOf(request.getSession().getAttribute("scheduleID")));
+      Map<String, Object> rFormMap = RegistFormService.docFindPati(scheduleID);
       String rItemJson = JSON.toJSONString(rFormMap);
-      //test
+      // test
       System.out.println(rItemJson);
-      //test
+      // test
 
       PrintWriter writer = response.getWriter();
       writer.write(rItemJson);

@@ -27,16 +27,16 @@ public class RegistFormService {
         return rFormList;
     }
 
-    public static List<RegistForm> findByDoctorID(int doctorID) throws SQLException, ClassNotFoundException {
+    public static List<RegistForm> findByScheduleID(int scheduleID) throws SQLException, ClassNotFoundException {
         RegistFormDao registDao = new RegistFormDao();
-        List<RegistForm> rFormList = registDao.findByDoctorID(doctorID);
+        List<RegistForm> rFormList = registDao.findByScheduleID(scheduleID);
         registDao.close();
         return rFormList;
     }
 
-    public static Map<String, Object> docFindPati(int doctorID) throws ClassNotFoundException, SQLException {
+    public static Map<String, Object> docFindPati(int scheduleID) throws ClassNotFoundException, SQLException {
         // 获取数据
-        List<RegistForm> rFormList = findByDoctorID(doctorID);
+        List<RegistForm> rFormList = findByScheduleID(scheduleID);
         // 进行分类
         Map<String, Object> rFormMap = new HashMap<>();
         List<Map<String, Object>> undiagList = new ArrayList<>();

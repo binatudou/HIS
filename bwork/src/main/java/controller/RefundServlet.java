@@ -35,7 +35,7 @@ public class RefundServlet extends HttpServlet {
             int result = RegistFormService.refund(registID);
             
             PrintWriter writer = response.getWriter();
-            writer.write(result);
+            writer.write(String.valueOf(result));
             writer.flush();
             writer.close();
 

@@ -11,34 +11,65 @@
 
 <body class="easyui-layout" fit="true" onload="load()">
   <div id="p" data-options="region:'west'" title="病人列表" style="width:30%;padding:10px">
-    <ul id="undiagList" class="easyui-datalist" lines="true" striped="true" textField="patiName" valueField="registID" style="width:100%;height:50%"></ul>
-    <ul id="diagList" class="easyui-datalist" lines="true" striped="true" textField="patiName" valueField="registID" style="width:100%;height:50%"></ul>
+    <div id="undiagList" style="width:100%;height:50%"></div>
+    <div id="diagList" style="width:100%;height:50%"></div>
   </div>
   <div region="center" border="false" border="false">
     <div class="easyui-tabs" fit="true">
       <div title="看诊">
         <iframe id="registration-frame" width="100%" height="99%" src="diagnose.html" frameborder="0"></iframe>
       </div>
-      <div title="开药">
+      <!-- <div title="开药">
         <iframe id="refund-frame" width="100%" height="99%" src="prescription.html" frameborder="0"></iframe>
-      </div>
+      </div> -->
     </div>
   </div>
 
   <script>
+    var selectedID;
+
     function load() {
+      //初始化datalist
+      $('#undiagList').datalist({
+        striped: "true",
+        title: "未诊病人",
+        plain: true,
+        valueField: 'registID',
+        textField: 'patiName',
+        singleSelect: true,
+        onSelect: function(index, rowData) {
+          selectedID = rowData.registID;
+          $('#diagList').datalist("unselectAll");
+        }
+      });
+      $('#diagList').datalist({
+        striped: "true",
+        title: "已诊病人",
+        plain: true,
+        valueField: 'registID',
+        textField: 'patiName',
+        singleSelect: true,
+        onSelect: function(index, rowData) {
+          selectedID = rowData.registID;
+          $('#undiagList').datalist("unselectAll");
+        }
+      });
+
       patiLoad();
+      /*
+      
+      */
     }
 
     //获取患者名单
     function patiLoad() {
       $.ajax({
-        type: "GET",
-        url: "docFindPati",
-        dataType: "JSON",
-        success: function(patiData) {
-          undiagList.datagrid("loadData", patiData.undiagList);
-          diagList.datagrid("loadData", patiData.diagList);
+        type: 'GET',
+        url: 'docFindPati',
+        success: function(result) {
+          patiData = jQuery.parseJSON(result);
+          $('#undiagList').datalist('loadData', patiData.undiagList);
+          $('#diagList').datalist('loadData', patiData.diagList);
         },
         error: function(e) {
           console.log(e.status);

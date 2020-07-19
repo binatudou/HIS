@@ -26,9 +26,9 @@ public class RegistFormDao extends Dao<RegistForm> {
         return find(TABLE_NAME, "RecordID", Integer.toString(recordID));
     }
 
-    public List<RegistForm> findByDoctorID(int doctorID) throws SQLException {
+    public List<RegistForm> findByScheduleID(int scheduleID) throws SQLException {
         Statement statement = connection.createStatement();
-        String queryString = "select * from " + TABLE_NAME + " where DoctorID = " + doctorID + " and DiagStatus = 0";
+        String queryString = "select * from " + TABLE_NAME + " where ScheduleID = " + scheduleID + " and DiagStatus = 0";
         ResultSet rs = statement.executeQuery(queryString);
         List<RegistForm> list = new ArrayList<>();
         while (rs.next()) {

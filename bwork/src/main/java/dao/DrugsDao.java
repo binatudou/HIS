@@ -7,7 +7,7 @@ import java.util.List;
 import bean.Drugs;
 
 public class DrugsDao extends Dao<Drugs> {
-    private static final String TABLE_NAME = "department";
+    private static final String TABLE_NAME = "drugs";
 
     public DrugsDao() throws ClassNotFoundException, SQLException {
         super();

@@ -13,52 +13,49 @@
   <div style="width:100%; height: 200px; padding: 20px;">
     <div>
       <label>病种搜索：</label>
-      <input id="dise-search" name="dise-search" class="easyui-textbox" prompt="请输入病种" style="width:200px">
+      <input id="diseSearch" class="easyui-textbox" prompt="请输入病种助记码" style="width:200px">
     </div>
-
-    <div>
-      <ul class="easyui-datalist" name="dise-list" id="dise-list" lines="true" style="width:100%;height:150px">
-        <li value="1">古典型霍乱</li>
-        <li value="2">中型[典型]霍乱</li>
-        <li value="3">重型[暴发型或干性]霍乱</li>
-      </ul>
-    </div>
+    <div id="diseList" style="width:100%;height:150px"></div>
   </div>
 
-  <form id="diagnose-form" method="post">
-    <input type="hidden" name="disease" id="input-disease" class="form-control">
+  <div style="width: 100%; padding: 20px;">
+    <input class="easyui-textbox" name="diagnose" id="diagnose" prompt="在此输入诊断" multiline="true" style="width:100%;height:300px;">
+  </div>
 
-    <div style="width: 100%; padding: 20px;">
-      <input class="easyui-textbox" name="diagnose" id="diagnose" prompt="在此输入诊断" multiline="true" style="width:100%;height:300px;">
-    </div>
-  </form>
   <div style="text-align:center;padding:5px">
     <a href="javascript:void(0)" class="easyui-linkbutton" onclick="diagnosed()">完诊</a>
   </div>
 
   <script>
     var diseases_info;
+    var selectedDiseID;
+    var diseList = $('#diseList');
+    var diseSearch = $("#diseSearch");
 
     function load() {
-      load_disease();
-    }
+      //疾病列表
+      diseList.datalist({
+        url: "diseFindAll",
+        method: "post",
+        striped: "true",
+        valueField: 'diseaseID',
+        textField: 'diseName',
+        singleSelect: true,
+        onSelect: function(index, rowData) {
+          selectedDiseID = rowData.diseaseID;
+        }
+      });
+      //疾病备份
+      diseases_info = diseList.datalist("getData");
+      //test
+      alert(diseases_info);
+      //test
+      //疾病查询框
+      diseSearch.textbox({
+        onChange: function(n, o) {
 
-    //从服务器获取疾病信息
-    function load_disease() {
-      //TODO
-      diseases_info = [{
-        "id": "1",
-        "DiseaseCode": "GDXHL",
-        "DiseaseName": "古典型霍乱"
-      }, {
-        "id": "2",
-        "DiseaseCode": "ZXDXHL",
-        "DiseaseName": "中型[典型]霍乱"
-      }, {
-        "id": "3",
-        "DiseaseCode": "ZXBFXHGXHL",
-        "DiseaseName": "重型[暴发型或干性]霍乱"
-      }];
+        }
+      });
     }
 
     //提交诊断信息，并清空界面
@@ -66,13 +63,13 @@
       $("diagnose-form").form("submit");
       alert("提交成功");
       $("#diagnose").textbox("setValue", "");
-      $("#dise-search").textbox("setValue", "");
+      $("#diseSearch").textbox("setValue", "");
       search_disease();
     }
 
     //键入时根据疾病助记码查找并填入
     function search_disease() {
-      var keyword = $("input", $("#dise-search").next("span")).val();
+      var keyword = $("input", $("#diseSearch").next("span")).val();
       var reg = new RegExp(keyword);
       var dise_arr = new Array();
       var dise_list = $("#dise-list");
@@ -91,16 +88,9 @@
       });
     }
 
-    //选中疾病后将疾病id输入表单
-    function set_disease() {
-      var input_disease = $("#input-disease");
-      var dise_list = $("#dise-list");
-      input_disease.val(dise_list.getSelectedValue());
-    }
-
     //绑定输入框
     $(function() {
-      $("input", $("#dise-search").next("span")).keyup(function() {
+      $("input", $("#diseSearch").next("span")).keyup(function() {
         search_disease();
       });
     });
