@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import bean.Prescription;
@@ -23,6 +22,27 @@ public class PrescriptionDao extends Dao<Prescription> {
 
     public List<Prescription> findByRecordID(int recordID) throws SQLException {
         return find(TABLE_NAME, "RecordID", Integer.toString(recordID));
+    }
+
+    /**
+     * 执行处方开立，若对应处方不为正在开立状态则直接返回
+     * 
+     * @param id
+     * @return -1: 未查到或处方号重复 0: 开立成功 1: 处方已开立 2: 处方已缴费 3: 处方已退费
+     * @throws SQLException
+     */
+    public int presEndCreate(int id) throws SQLException {
+        List<Prescription> presList = find(TABLE_NAME, "id", Integer.toString(id));
+        // 未查到或处方号重复
+        if (presList.size() != 1)
+            return -1;
+        if (presList.get(0).getPresStatus() == 0) {
+            String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + id;
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+        }
+        return presList.get(0).getPresStatus();
     }
 
     /**
@@ -62,7 +82,7 @@ public class PrescriptionDao extends Dao<Prescription> {
 
         Statement statement = connection.createStatement();
         String queryString = "select * from " + TABLE_NAME + " where recordID = " + prescription.getRecordID()
-                + "ORDER BY CreationTime DESC";
+                + " ORDER BY CreationTime DESC";
 
         ResultSet rs = statement.executeQuery(queryString);
         if (rs.next()) {
@@ -88,7 +108,7 @@ public class PrescriptionDao extends Dao<Prescription> {
             double totalPrice = rs.getDouble("TotalPrice");
             int presStatus = rs.getInt("PresStatus");
             return new Prescription(id, registID, recordID, doctorID, patiName, presName, creationTime, totalPrice,
-                    presStatus, new ArrayList<>());
+                    presStatus);
         } catch (Exception e) {
             e.printStackTrace();
         }

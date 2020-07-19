@@ -93,20 +93,18 @@
       //初始化
       $("#mnemonicCode").combobox({
         valueField: "drugID",
-        textField: "drugsName",
+        textField: "mnemonicCode",
         onSelect: function(record) {
-          alert(record);
+          inputDrug(record.drugID);
         }
       });
     }
 
     //根据助记码搜索药品并录入数据
-    function searchDrug() {
-      var keyword = $("input", $("#mnemonicCode").next("span")).val();
-
+    function inputDrug(drugID) {
       drugs.forEach(drug => {
-        if (keyword == drug.mnemonicCode) {
-          $("#drugID").textbox("setValue", drug.id);
+        if (drugID == drug.drugID) {
+          $("#drugID").textbox("setValue", drugID);
           $("#drugName").textbox("setValue", drug.drugName);
           $("#drugPrice").textbox("setValue", drug.drugPrice);
         };
@@ -146,7 +144,25 @@
       var tPrice = calTotalPrice();
       var itemData = $('#presDG').datagrid('getData').data;
 
-      $("presForm").submit({
+      //检查处方
+      var drugItems = $('#presDG').datagrid('getData');
+      if (!presName) {
+        alert("提交失败：请先命名处方");
+        return;
+      } else if (!drugItems.total || drugItems.total == 0) {
+        alert("提交失败：无法提交空处方");
+        return;
+      } else {
+        for (let index = 0; index < itemData.length; index++) {
+          const drug = itemData[index];
+          if (!drug.drugID || !drug.drugPrice || !drug.drugNumber) {
+            alert("提交失败：第" + index + "行药品格式错误");
+            return;
+          }
+        }
+      }
+      //提交处方
+      $.ajax({
         url: "presAdd",
         method: "post",
         data: {
@@ -156,34 +172,22 @@
           totalPrice: tPrice,
           items: itemData
         },
-        onSubmit: function() {
-          var drugItems = $('#presDG').datagrid('getData');
-          //检查处方
-          if (!presName) {
-            alert("提交失败：请先命名处方");
-            return false;
-          } else if (!drugItems.total || drugItems.total == 0) {
-            alert("提交失败：无法提交空处方");
-            return false;
-          } else {
-            for (let index = 0; index < itemData.length; index++) {
-              const drug = itemData[index];
-              if (!drug.drugID || !drug.drugPrice || !drug.drugNumber) {
-                alert("提交失败：第" + index + "行药品格式错误");
-                return false;
-              }
-            }
-          }
-          return true;
-        },
+        onSubmit: function() {},
         success: function(data) {
-          if (data.success) {
-            alert("提交成功");
-            //清空处方
-            $('#presDG').datagrid('loadData', {
-              total: 0,
-              rows: []
-            });
+          if (data) {
+            data = jQuery.parseJSON(data);
+            if (data.success) {
+              alert("提交成功");
+              //清空处方
+              $('#presDG').datagrid('loadData', {
+                total: 0,
+                rows: []
+              });
+            } else {
+              alert("提交失败，请检查账户权限");
+            }
+          } else {
+            alert("未知返回值");
           }
         },
         error: function(e) {
@@ -206,15 +210,26 @@
         return false;
       } else {
         var drugs = {
-          drugID: $("input", $("#drugID").next("span")).val(),
-          drugName: $("input", $("#drugName").next("span")).val(),
-          drugPrice: $("input", $("#drugPrice").next("span")).val(),
-          drugNumber: $("input", $("#drugNumber").next("span")).val(),
-          description: $("input", $("#description").next("span")).val(),
+            drugID: $("input", $("#drugID").next("span")).val(),
+            drugName: $("input", $("#drugName").next("span")).val(),
+            drugPrice: $("input", $("#drugPrice").next("span")).val(),
+            drugNumber: $("input", $("#drugNumber").next("span")).val(),
+            description: $("input", $("#description").next("span")).val(),
+          }
+          //若选中则为update
+        var row = $('#presDG').datagrid('getSelected');
+        if (row) {
+          var i = $('#presDG').datagrid("getRowIndex", row);
+          $('#presDG').datagrid('deleteRow', i);
+          $('#presDG').datagrid('insertRow', {
+            index: i,
+            row: drugs
+          });
+        } else {
+          $('#presDG').datagrid('insertRow', {
+            row: drugs
+          });
         }
-        $('#presDG').datagrid('insertRow', {
-          row: drugs
-        });
         $('#dlg').dialog('close');
 
       }

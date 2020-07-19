@@ -27,8 +27,7 @@ public class PrescriptionService {
         return presList;
     }
 
-    public static void add(Map<String, String[]> formMap, String docStr)
-            throws ClassNotFoundException, SQLException {
+    public static void add(Map<String, String[]> formMap, String docStr) throws ClassNotFoundException, SQLException {
         int registID = Integer.parseInt(formMap.get("registID")[0]);
         int recordID = RegistFormService.findById(registID).getRecordID();
         int doctorID = Integer.parseInt(docStr);
@@ -37,11 +36,12 @@ public class PrescriptionService {
         Timestamp creationTime = new Timestamp(new java.util.Date().getTime());
         double totalPrice = Double.parseDouble(formMap.get("totalPrice")[0]);
 
-        Prescription prescription = new Prescription(0, registID, recordID, doctorID, patiName, presName, creationTime, totalPrice, 0, null);
+        Prescription prescription = new Prescription(0, registID, recordID, doctorID, patiName, presName, creationTime,
+                totalPrice, 0);
 
-        //开立处方，置状态为0
+        // 开立处方，置状态为0
         int prescriptionID = presCreate(prescription);
-        //录入药品记录
+        // 录入药品记录
         for (String itemStr : formMap.get("items")) {
             JSONObject jItem = JSON.parseObject(itemStr);
             int drugID = Integer.parseInt(jItem.getString("drugID"));
@@ -49,7 +49,7 @@ public class PrescriptionService {
             String description = jItem.getString("description");
             Double drugPrice = Double.parseDouble(jItem.getString("drugPrice"));
             int drugNumber = Integer.parseInt(jItem.getString("drugNumber"));
-            
+
             PresItem pItem = new PresItem(0, prescriptionID, drugID, drugName, drugPrice, drugNumber, description, 0);
             PresItemService.addDrug(pItem);
         }
@@ -59,6 +59,7 @@ public class PrescriptionService {
 
     /**
      * 返回生成处方的ID
+     * 
      * @param prescription
      * @return
      * @throws SQLException
@@ -71,26 +72,34 @@ public class PrescriptionService {
         return prescriptionID;
     }
 
-
-    public static int presEndCreate(int prescriptionID) throws SQLException, ClassNotFoundException {
-        PrescriptionDao presDao = new PrescriptionDao();
-        presDao.endCreate(prescriptionID);
-        presDao.close();
-        return prescriptionID;
-    }
-
     /**
-     * 执行退号，返回执行前挂号单的挂号状态
+     * 返回生成处方的结果
      * 
-     * @param id
+     * @param prescriptionID
      * @return
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public static int refund(int id) throws SQLException, ClassNotFoundException {
+    public static int presEndCreate(int prescriptionID) throws SQLException, ClassNotFoundException {
         PrescriptionDao presDao = new PrescriptionDao();
-        int result = presDao.refund(id);
+        int result = presDao.presEndCreate(prescriptionID);
         presDao.close();
         return result;
     }
+
+    // /**
+    // * 执行退号，返回执行前挂号单的挂号状态
+    // *
+    // * @param id
+    // * @return
+    // * @throws SQLException
+    // * @throws ClassNotFoundException
+    // */
+    // public static int refund(int id) throws SQLException, ClassNotFoundException
+    // {
+    // PrescriptionDao presDao = new PrescriptionDao();
+    // int result = presDao.refund(id);
+    // presDao.close();
+    // return result;
+    // }
 }

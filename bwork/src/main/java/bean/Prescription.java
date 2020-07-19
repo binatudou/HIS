@@ -1,7 +1,6 @@
 package bean;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 public class Prescription {
   private int id;
@@ -13,7 +12,6 @@ public class Prescription {
   private Timestamp creationTime;
   private double totalPrice;
   private int presStatus;
-  private List<PresItem> items;
 
   /**
    * @param id
@@ -25,10 +23,9 @@ public class Prescription {
    * @param creationTime 开立时间
    * @param totalPrice   处方总价
    * @param presStatus   处方状态
-   * @param items        药品列表
    */
   public Prescription(int id, int registID, int recordID, int doctorID, String patiName, String presName,
-      Timestamp creationTime, double totalPrice, int presStatus, List<PresItem> items) {
+      Timestamp creationTime, double totalPrice, int presStatus) {
     this.id = id;
     this.registID = registID;
     this.recordID = recordID;
@@ -38,7 +35,6 @@ public class Prescription {
     this.creationTime = creationTime;
     this.totalPrice = totalPrice;
     this.presStatus = presStatus;
-    this.items = items;
   }
 
   /**
@@ -165,19 +161,5 @@ public class Prescription {
    */
   public void setPresStatus(int presStatus) {
     this.presStatus = presStatus;
-  }
-
-  /**
-   * @return the items
-   */
-  public List<PresItem> getItems() {
-    return items;
-  }
-
-  /**
-   * @param items the items to set
-   */
-  public void setItems(List<PresItem> items) {
-    this.items = items;
   }
 }

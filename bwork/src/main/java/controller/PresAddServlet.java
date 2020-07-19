@@ -32,13 +32,13 @@ public class PresAddServlet extends HttpServlet {
             Map<String, Object> resultMap = new HashMap<>();
             // 无权限开立
             if (doctorID == null) {
-                resultMap.put("resultCode", -1);
-            } else { //
+                resultMap.put("success", false);
+            } else {
                 Map<String, String[]> formMap = request.getParameterMap();
                 
                 PrescriptionService.add(formMap, doctorID);
 
-                resultMap.put("resultCode", 0);
+                resultMap.put("success", true);
 
                 String result = JSON.toJSONString(resultMap);
 
