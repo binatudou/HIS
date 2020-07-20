@@ -37,7 +37,7 @@ public class PrescriptionDao extends Dao<Prescription> {
         if (presList.size() != 1)
             return -1;
         if (presList.get(0).getPresStatus() == 0) {
-            String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + id;
+            String sql = "update " + TABLE_NAME + " set PresStatus = 1 where id = " + id;
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
             statement.close();
@@ -57,8 +57,8 @@ public class PrescriptionDao extends Dao<Prescription> {
         // 未查到或处方号重复
         if (presList.size() != 1)
             return -1;
-        if (presList.get(0).getPresStatus() == 0) {
-            String sql = "update " + TABLE_NAME + " set DiagStatus = 2 where id = " + id;
+        if (presList.get(0).getPresStatus() == 1) {
+            String sql = "update " + TABLE_NAME + " set PresStatus = 2 where id = " + id;
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
             statement.close();

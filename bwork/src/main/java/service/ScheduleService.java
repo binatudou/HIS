@@ -23,4 +23,11 @@ public class ScheduleService {
         scheDao.close();
         return schedule;
     }
+
+    public static boolean regist(int scheduleID) throws SQLException, ClassNotFoundException {
+        ScheduleDao scheDao = new ScheduleDao();
+        boolean result = scheDao.regist(scheduleID);
+        scheDao.close();
+        return result;
+    }
 }

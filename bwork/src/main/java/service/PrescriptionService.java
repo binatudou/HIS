@@ -5,9 +5,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 import bean.PresItem;
 import bean.Prescription;
 import dao.PrescriptionDao;
@@ -42,13 +39,13 @@ public class PrescriptionService {
         // 开立处方，置状态为0
         int prescriptionID = presCreate(prescription);
         // 录入药品记录
-        for (String itemStr : formMap.get("items")) {
-            JSONObject jItem = JSON.parseObject(itemStr);
-            int drugID = Integer.parseInt(jItem.getString("drugID"));
-            String drugName = jItem.getString("drugName");
-            String description = jItem.getString("description");
-            Double drugPrice = Double.parseDouble(jItem.getString("drugPrice"));
-            int drugNumber = Integer.parseInt(jItem.getString("drugNumber"));
+        int len = Integer.parseInt(formMap.get("itemLength")[0]);
+        for (int i = 0; i < len; i++) {
+            int drugID = Integer.parseInt(formMap.get("items[" + i + "][drugID]")[0]);
+            String drugName = formMap.get("items[" + i + "][drugName]")[0];
+            String description = formMap.get("items[" + i + "][description]")[0];
+            Double drugPrice = Double.parseDouble(formMap.get("items[" + i + "][drugPrice]")[0]);
+            int drugNumber = Integer.parseInt(formMap.get("items[" + i + "][drugNumber]")[0]);
 
             PresItem pItem = new PresItem(0, prescriptionID, drugID, drugName, drugPrice, drugNumber, description, 0);
             PresItemService.addDrug(pItem);
@@ -88,18 +85,18 @@ public class PrescriptionService {
     }
 
     /**
-    * 执行退号，返回执行前挂号单的挂号状态
-    *
-    * @param id
-    * @return
-    * @throws SQLException
-    * @throws ClassNotFoundException
-    */
-    public static int presPay(int id) throws SQLException, ClassNotFoundException
-    {
-    PrescriptionDao presDao = new PrescriptionDao();
-    int result = presDao.presPay(id);
-    presDao.close();
-    return result;
+     * 执行缴费，返回执行前处方的缴费情况
+     *
+     * @param id
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static int presPay(int id) throws SQLException, ClassNotFoundException {
+        PrescriptionDao presDao = new PrescriptionDao();
+        PresItemService.payDrugs(id);
+        int result = presDao.presPay(id);
+        presDao.close();
+        return result;
     }
 }

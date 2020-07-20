@@ -170,9 +170,9 @@
           patiName: patName,
           presName: preName,
           totalPrice: tPrice,
+          itemLength: itemData.length,
           items: itemData
         },
-        onSubmit: function() {},
         success: function(data) {
           if (data) {
             data = jQuery.parseJSON(data);

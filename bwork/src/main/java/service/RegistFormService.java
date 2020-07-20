@@ -17,7 +17,7 @@ public class RegistFormService {
         RegistFormDao registDao = new RegistFormDao();
         List<RegistForm> rFormList = registDao.findById(id);
         registDao.close();
-        return rFormList.size() == 1? rFormList.get(0): null;
+        return rFormList.size() == 1 ? rFormList.get(0) : null;
     }
 
     public static List<RegistForm> findByRecordID(int recordID) throws SQLException, ClassNotFoundException {
@@ -60,6 +60,14 @@ public class RegistFormService {
         return rFormMap;
     }
 
+    /**
+     * 挂号
+     * 
+     * @param formMap
+     * @param operStr
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     public static void regist(Map<String, String[]> formMap, String operStr)
             throws ClassNotFoundException, SQLException {
         RegistFormDao rFormDao = new RegistFormDao();
@@ -75,20 +83,21 @@ public class RegistFormService {
         Date reseDate = Date.valueOf(formMap.get("registDate")[0]);
         int docTime = Integer.parseInt(formMap.get("docTime")[0]);
 
-        RegistForm rForm = new RegistForm(0, recordID, departmentID, scheduleID, operatorID, patiName, age, registTime,
-                deptName, reseDate, docTime, 0);
+        if (ScheduleService.regist(scheduleID)) {
+            RegistForm rForm = new RegistForm(0, recordID, departmentID, scheduleID, operatorID, patiName, age,
+                    registTime, deptName, reseDate, docTime, 0);
 
-        if (PatientService.findByRecordID(recordID) == null) {
-            int sex = Integer.parseInt(formMap.get("sex")[0]);
-            Date birthday = Date.valueOf(formMap.get("birthday")[0]);
-            String idNumber = formMap.get("idNumber")[0];
-            String patiAddress = formMap.get("patiAddress")[0];
+            if (PatientService.findByRecordID(recordID) == null) {
+                int sex = Integer.parseInt(formMap.get("sex")[0]);
+                Date birthday = Date.valueOf(formMap.get("birthday")[0]);
+                String idNumber = formMap.get("idNumber")[0];
+                String patiAddress = formMap.get("patiAddress")[0];
 
-            Patient patient = new Patient(0, recordID, patiName, sex, birthday, idNumber, patiAddress);
-            PatientService.insert(patient);
+                Patient patient = new Patient(0, recordID, patiName, sex, birthday, idNumber, patiAddress);
+                PatientService.insert(patient);
+            }
+            rFormDao.insert(rForm);
         }
-
-        rFormDao.insert(rForm);
         rFormDao.close();
     }
 
@@ -109,6 +118,7 @@ public class RegistFormService {
 
     /**
      * 执行完诊，返回执行前挂号单的挂号状态
+     * 
      * @param id
      * @return
      * @throws SQLException

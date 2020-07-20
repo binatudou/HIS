@@ -22,7 +22,7 @@ public class TestServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             PrintWriter writer = response.getWriter();
-            writer.write("已接受请求");
+            writer.write(request.getHeader("items"));
             writer.flush();
             writer.close();
         } catch (Exception e) {

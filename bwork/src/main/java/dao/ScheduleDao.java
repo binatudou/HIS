@@ -41,6 +41,27 @@ public class ScheduleDao extends Dao<Schedule> {
             return scheList.get(0);
     }
 
+    public boolean regist(int scheduleID) throws SQLException {
+        List<Schedule> scheList = find(TABLE_NAME, "id", Integer.toString(scheduleID));
+        // 未查到或排班号重复
+        if (scheList.size() != 1)
+            return false;
+        else {
+            Schedule schedule = scheList.get(0);
+            // 排班挂号已满
+            if (schedule.getTotalNumber() <= schedule.getUsedNumber()) {
+                return false;
+            } else {
+                String sql = "update " + TABLE_NAME + " set UsedNumber = " + (schedule.getUsedNumber() + 1)
+                        + " where id = " + scheduleID;
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(sql);
+                statement.close();
+            }
+        }
+        return true;
+    }
+
     @Override
     protected Schedule RSToBean(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");

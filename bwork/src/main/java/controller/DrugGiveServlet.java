@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,24 +17,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 
-import bean.RegistForm;
-import service.RegistFormService;
+import bean.Prescription;
+import service.PrescriptionService;
 
-@WebServlet(name = "RefundServlet", urlPatterns = { "/refund" })
-public class RefundServlet extends HttpServlet {
+@WebServlet(name = "DrugGiveServlet", urlPatterns = { "/drugGive" })
+public class DrugGiveServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String STATUS[] = { "未诊", "已诊", "已退号" };
-    private static final String DOC_DATE[] = { "上午", "下午", "晚间" };
+    private static final String STATUS[] = { "尚未开立", "已开立", "已缴费", "已退号" };
+    // TODO
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setCharacterEncoding("UTF-8");
+            Map<String, Object> resultMap = new HashMap<>();
+            int prescriptionID = Integer.parseInt(request.getParameter("prescriptionID"));
 
-            int registID = Integer.parseInt(request.getParameter("RegistID"));
+            PrescriptionService.presPay(prescriptionID);
 
-            int result = RegistFormService.refund(registID);
-            
+            resultMap.put("success", true);
+
+            String result = JSON.toJSONString(resultMap);
+
             PrintWriter writer = response.getWriter();
             writer.write(String.valueOf(result));
             writer.flush();
@@ -52,19 +56,24 @@ public class RefundServlet extends HttpServlet {
             List<Map<String, Object>> rItemList = new ArrayList<>();
 
             int recordID = Integer.parseInt(request.getParameter("RecordID"));
-            List<RegistForm> rFormList = RegistFormService.findByRecordID(recordID);
+            List<Prescription> prescriptionList = PrescriptionService.findByRecordID(recordID);
 
-            for (RegistForm rForm : rFormList) {
-                Map<String, Object> rItem = new HashMap<>();
-                rItem.put("RegistID", rForm.getId());
-                rItem.put("RecordID", recordID);
-                rItem.put("PatiName", rForm.getPatiName());
-                rItem.put("ReseDate", rForm.getReseDate());
-                rItem.put("DocTime", DOC_DATE[rForm.getDocTime()]);
-                rItem.put("DeptName", rForm.getDeptName());
-                rItem.put("DiagStatus", STATUS[rForm.getDiagStatus()]);
+            for (Prescription prescription : prescriptionList) {
+                // 仅发送已缴费的处方
+                if (prescription.getPresStatus() == 2) {
+                    Map<String, Object> pItem = new HashMap<>();
+                    pItem.put("prescriptionID", prescription.getId());
+                    pItem.put("presName", prescription.getPresName());
+                    pItem.put("recordID", recordID);
+                    pItem.put("patiName", prescription.getPatiName());
+                    pItem.put("totalPrice", prescription.getTotalPrice());
 
-                rItemList.add(rItem);
+                    Date temp = new Date(prescription.getCreationTime().getTime());
+                    pItem.put("creationTime", temp.toString());
+                    pItem.put("presStatus", STATUS[prescription.getPresStatus()]);
+
+                    rItemList.add(pItem);
+                }
             }
             String rItemJson = JSON.toJSONString(rItemList);
 

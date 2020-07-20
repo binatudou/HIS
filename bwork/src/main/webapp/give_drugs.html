@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery-easyui-1.7.0/themes/icon.css">
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.min.js"></script>
+  <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+</head>
+
+<body onload="load()">
+  <table id="dg" title="取药信息查询" class="easyui-datagrid" fit="true" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="false" selectOnCheck="true">
+    <thead>
+      <tr>
+        <th data-options="field:'ck',checkbox:true" style="width: 5%;"></th>
+        <th field="prescriptionID" align="center" hidden="true">处方号</th>
+        <th field="presName" align="center" style="width: 20%;">处方名</th>
+        <th field="recordID" align="center" style="width: 10%;">病历号</th>
+        <th field="patiName" align="center" style="width: 10%;">患者姓名</th>
+        <th field="drugName" align="center" style="width: 10%;">药品名称</th>
+        <th field="drugPrice" align="center" style="width: 10%;">单价</th>
+        <th field="drugNumber" align="center" style="width: 5%;">数量</th>
+        <th field="creationTime" align="center" style="width: 20%;">开立时间</th>
+        <th field="presStatus" align="center" style="width: 10%;">缴费状态</th>
+      </tr>
+    </thead>
+  </table>
+  <div id="toolbar">
+    <label>病历号检索：</label>
+    <input id="search-record" name="search-record" class="easyui-searchbox" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
+    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="giveDrugs()" style="float:right; width:15%">给药</a>
+  </div>
+
+  <script>
+    var localData = [];
+
+    function load() {
+      //录入数据
+      localData = [{
+        prescriptionID: 1,
+        presName: "处方A",
+        recordID: 1,
+        patiName: "患者",
+        creationTime: "2020-07-20 12:00:00",
+        drugs: [{
+          drugName: "药品A",
+          drugPrice: 1.23,
+          drugNumber: 3,
+          presStatus: "未取药"
+        }, {
+          drugName: "药品B",
+          drugPrice: 11.20,
+          drugNumber: 2,
+          presStatus: "未取药"
+        }]
+      }, {
+        prescriptionID: 1,
+        presName: "处方B",
+        recordID: 1,
+        patiName: "患者",
+        creationTime: "2020-07-20 12:00:30",
+        drugs: [{
+          drugName: "药品C",
+          drugPrice: 59.20,
+          drugNumber: 2,
+          presStatus: "未取药"
+        }, {
+          drugName: "药品B",
+          drugPrice: 11.20,
+          drugNumber: 2,
+          presStatus: "未取药"
+        }, {
+          drugName: "药品D",
+          drugPrice: 12.02,
+          drugNumber: 2,
+          presStatus: "未取药"
+        }]
+      }];
+    }
+
+    function searchRecord(value) {
+      //判断输入是否为正整数
+      var reg = /^\d+$/; // 非负整数
+      if (reg.test(value)) {
+        // $.ajax({
+        //   type: "GET",
+        //   url: "drugGive",
+        //   data: {
+        //     RecordID: value
+        //   },
+        //   dataType: "JSON",
+        //   success: function(rItemList) {
+        //     if (rItemList.length == 0)
+        //       alert("未查询到该病历下的挂号记录");
+        //     else
+        //       $("#dg").datagrid({
+        //         data: rItemList
+        //       });
+        //   },
+        //   error: function(e) {
+        //     console.log(e.status);
+        //     console.log(e.responseText);
+        //   }
+        // });
+        fillData(localData);
+      } else {
+        alert("请输入正确的病历号");
+      }
+    }
+
+    function fillData(data) {
+      var index = 0;
+      data.forEach(prescription => {
+        var preIndex = index;
+        var rowSpan = 0;
+        prescription.drugs.forEach(drug => {
+          var drugData = {
+            prescriptionID: prescription.prescriptionID,
+            presName: prescription.presName,
+            recordID: prescription.recordID,
+            patiName: prescription.patiName,
+            creationTime: prescription.creationTime,
+            drugName: drug.drugName,
+            drugPrice: drug.drugPrice,
+            drugNumber: drug.drugNumber,
+            presStatus: drug.presStatus
+          }
+          $("#dg").datagrid('insertRow', {
+            row: drugData
+          });
+          index++;
+          rowSpan++;
+        });
+        $("#dg").datagrid('mergeCells', {
+          index: preIndex,
+          field: 'presName',
+          rowspan: rowSpan
+        });
+      });
+    }
+
+    function giveDrugs() {
+      var row = $('#dg').datagrid('getSelected');
+      if (row) {
+        $.messager.confirm('确认', '是否给药？', function(r) {
+          //执行给药，并返回结果
+          $.ajax({
+            type: "POST",
+            url: "drugGive",
+            data: {
+              RegistID: row.RegistID
+            },
+            success: function(result) {
+              if (result) {
+                result = jQuery.parseJSON(result);
+                if (result.success) {
+                  alert("给药成功");
+                } else {
+                  alert("给药失败");
+                }
+              }
+              //清空搜索框与表格
+              $("#search-record").searchbox("clear");
+              $("#dg").datagrid({
+                data: []
+              });
+            },
+            error: function(e) {
+              console.log(e.status);
+              console.log(e.responseText);
+            }
+          });
+        });
+      } else {
+        alert("请选中一行记录！")
+      }
+    }
+  </script>
+</body>
+
+</html>

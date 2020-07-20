@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,14 +66,15 @@ public class PresPayServlet extends HttpServlet {
                     pItem.put("patiName", prescription.getPatiName());
                     pItem.put("presName", prescription.getPresName());
                     pItem.put("totalPrice", prescription.getTotalPrice());
-                    pItem.put("creationTime", prescription.getCreationTime());
+
+                    Date temp = new Date(prescription.getCreationTime().getTime());
+                    pItem.put("creationTime", temp.toString());
                     pItem.put("presStatus", STATUS[prescription.getPresStatus()]);
 
                     rItemList.add(pItem);
                 }
             }
             String rItemJson = JSON.toJSONString(rItemList);
-            System.out.println(rItemJson);
 
             PrintWriter writer = response.getWriter();
             writer.write(rItemJson);

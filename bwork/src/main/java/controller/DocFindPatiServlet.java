@@ -28,9 +28,6 @@ public class DocFindPatiServlet extends HttpServlet {
       int scheduleID = Integer.parseInt(String.valueOf(request.getSession().getAttribute("scheduleID")));
       Map<String, Object> rFormMap = RegistFormService.docFindPati(scheduleID);
       String rItemJson = JSON.toJSONString(rFormMap);
-      // test
-      System.out.println(rItemJson);
-      // test
 
       PrintWriter writer = response.getWriter();
       writer.write(rItemJson);

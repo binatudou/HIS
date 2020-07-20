@@ -9,29 +9,22 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
 </head>
 
-<body onload="load()">
-  <div id="dateList"></div>
+<body>
   <script>
-    function load() {
-      var dateList = $('#dateList').datalist({
-        lines: "true",
-        striped: "true",
-        fit: false,
-        plain: true,
-        valueField: 'registID',
-        textField: 'patiName',
-        singleSelect: true,
-        onSelect: function(index, rowData) {
-          alert(rowData.registID);
-        }
-      });
-      var dates = [];
-      dates.push({
-        registID: "alpha",
-        patiName: "beata"
-      });
-      dateList.datalist('loadData', dates);
-    }
+    $.ajax({
+      url: "test",
+      method: "post",
+      data: {
+        items: itemData
+      },
+      success: function(data) {
+        alert("1");
+      },
+      error: function(e) {
+        console.log(e.status);
+        console.log(e.responseText);
+      }
+    });
   </script>
 </body>
 
