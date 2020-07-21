@@ -110,17 +110,15 @@
             url: "drugGive",
             traditional: "true",
             data: {
-              idArr: {
-                idArr: idArr
-              }
+              idArr: idArr
             },
             success: function(result) {
               if (result) {
                 result = jQuery.parseJSON(result);
-                if (result.success) {
+                if (result.resultCode == 0) {
                   alert("给药成功");
                 } else {
-                  alert("给药失败");
+                  alert("更新第" + result.resultCode + "个药品时发生错误");
                 }
               }
               //清空搜索框与表格

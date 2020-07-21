@@ -22,7 +22,7 @@ public class PresItemService {
       int presItemID = pIDList.get(i);
       if(piDao.giveDrug(presItemID) != 1){
         piDao.close();
-        return presItemID + 1;
+        return i + 1;
       }
     }
 
@@ -61,6 +61,6 @@ public class PresItemService {
     List<Integer> pIDList = new ArrayList<>();
     pIDList.add(1);
     pIDList.add(2);
-    giveDrugs(pIDList);
+    System.out.println(giveDrugs(pIDList));
   }
 }
