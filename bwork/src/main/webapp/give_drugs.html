@@ -14,7 +14,7 @@
     <thead>
       <tr>
         <th data-options="field:'ck',checkbox:true" style="width: 5%;"></th>
-        <th field="prescriptionID" align="center" hidden="true">处方号</th>
+        <th field="presItemID" align="center" hidden="true"></th>
         <th field="presName" align="center" style="width: 20%;">处方名</th>
         <th field="recordID" align="center" style="width: 10%;">病历号</th>
         <th field="patiName" align="center" style="width: 10%;">患者姓名</th>
@@ -22,7 +22,7 @@
         <th field="drugPrice" align="center" style="width: 10%;">单价</th>
         <th field="drugNumber" align="center" style="width: 5%;">数量</th>
         <th field="creationTime" align="center" style="width: 20%;">开立时间</th>
-        <th field="presStatus" align="center" style="width: 10%;">缴费状态</th>
+        <th field="paymentStatus" align="center" style="width: 10%;">缴费状态</th>
       </tr>
     </thead>
   </table>
@@ -38,7 +38,7 @@
     function load() {
       //录入数据
       localData = [{
-        prescriptionID: 1,
+        presItemID: 1,
         presName: "处方A",
         recordID: 1,
         patiName: "患者",
@@ -47,15 +47,15 @@
           drugName: "药品A",
           drugPrice: 1.23,
           drugNumber: 3,
-          presStatus: "未取药"
+          paymentStatus: "未取药"
         }, {
           drugName: "药品B",
           drugPrice: 11.20,
           drugNumber: 2,
-          presStatus: "未取药"
+          paymentStatus: "未取药"
         }]
       }, {
-        prescriptionID: 1,
+        presItemID: 1,
         presName: "处方B",
         recordID: 1,
         patiName: "患者",
@@ -64,17 +64,17 @@
           drugName: "药品C",
           drugPrice: 59.20,
           drugNumber: 2,
-          presStatus: "未取药"
+          paymentStatus: "未取药"
         }, {
           drugName: "药品B",
           drugPrice: 11.20,
           drugNumber: 2,
-          presStatus: "未取药"
+          paymentStatus: "未取药"
         }, {
           drugName: "药品D",
           drugPrice: 12.02,
           drugNumber: 2,
-          presStatus: "未取药"
+          paymentStatus: "未取药"
         }]
       }];
     }
@@ -83,32 +83,30 @@
       //判断输入是否为正整数
       var reg = /^\d+$/; // 非负整数
       if (reg.test(value)) {
-        // $.ajax({
-        //   type: "GET",
-        //   url: "drugGive",
-        //   data: {
-        //     RecordID: value
-        //   },
-        //   dataType: "JSON",
-        //   success: function(rItemList) {
-        //     if (rItemList.length == 0)
-        //       alert("未查询到该病历下的挂号记录");
-        //     else
-        //       $("#dg").datagrid({
-        //         data: rItemList
-        //       });
-        //   },
-        //   error: function(e) {
-        //     console.log(e.status);
-        //     console.log(e.responseText);
-        //   }
-        // });
-        fillData(localData);
+        $.ajax({
+          type: "GET",
+          url: "drugGive",
+          data: {
+            RecordID: value
+          },
+          dataType: "JSON",
+          success: function(data) {
+            if (data.length == 0)
+              alert("未查询到该病历下的挂号记录");
+            else
+              fillData(data);
+          },
+          error: function(e) {
+            console.log(e.status);
+            console.log(e.responseText);
+          }
+        });
       } else {
         alert("请输入正确的病历号");
       }
     }
 
+    //向表格中输入数据，同处方自动合并
     function fillData(data) {
       var index = 0;
       data.forEach(prescription => {
@@ -116,15 +114,15 @@
         var rowSpan = 0;
         prescription.drugs.forEach(drug => {
           var drugData = {
-            prescriptionID: prescription.prescriptionID,
             presName: prescription.presName,
             recordID: prescription.recordID,
             patiName: prescription.patiName,
             creationTime: prescription.creationTime,
+            presItemID: drug.presItemID,
             drugName: drug.drugName,
             drugPrice: drug.drugPrice,
             drugNumber: drug.drugNumber,
-            presStatus: drug.presStatus
+            paymentStatus: drug.paymentStatus
           }
           $("#dg").datagrid('insertRow', {
             row: drugData

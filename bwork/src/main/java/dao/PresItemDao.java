@@ -16,49 +16,62 @@ public class PresItemDao extends Dao<PresItem> {
     }
 
     public List<PresItem> findByPrescriptionID(int prescriptionID) throws SQLException {
-    return find(TABLE_NAME, "PrescriptionID", Integer.toString(prescriptionID));
+        return find(TABLE_NAME, "PrescriptionID", Integer.toString(prescriptionID));
     }
 
-    // 执行缴费，若对应记录不为未缴费状态则直接返回
+    /**
+     * 对未缴费处方中的处方明细执行缴费
+     * 
+     * @param prescriptionID 待执行处方id
+     * @return -1: 未查到处方或药品记录; 0: 可执行缴费操作; n: 第n个处方明细内容错误(从1起数)
+     * @throws SQLException
+     */
     public int payDrugs(int prescriptionID) throws SQLException {
         List<PresItem> pItemList = find(TABLE_NAME, "id", Integer.toString(prescriptionID));
         // 未查到处方或药品记录
         if (pItemList.isEmpty())
             return -1;
-        for (PresItem presItem : pItemList) {
-            // 处方中药品记录不为未缴费状态
+        //遍历处方，检查处方明细
+        for (int i = 0; i < pItemList.size(); i++) {
+            PresItem presItem = pItemList.get(i);
+            // 处方明细不为未缴费状态
             if (presItem.getPaymentStatus() != 0) {
-                return 1;
+                return i + 1;
             }
         }
+        
         // 执行开药
         String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + prescriptionID;
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         statement.close();
-
         return 0;
     }
 
-    // 执行开药，若对应记录不为已缴费状态则直接返回
-    public int giveDrugs(int prescriptionID) throws SQLException {
-        List<PresItem> pItemList = find(TABLE_NAME, "id", Integer.toString(prescriptionID));
+    /**
+     * 对已缴费处方明细执行开药
+     * @param presItemID 处方明细id
+     * @return paymentStatus 处方明细状态
+     * @throws SQLException
+     */
+    public int giveDrug(int presItemID) throws SQLException {
+        List<PresItem> resultList = find(TABLE_NAME, "id", Integer.toString(presItemID));
         // 未查到处方或药品记录
-        if (pItemList.isEmpty())
+        if (resultList.isEmpty())
             return -1;
-        for (PresItem presItem : pItemList) {
-            // 处方中药品记录不为已缴费状态
-            if (presItem.getPaymentStatus() != 1) {
-                return 1;
-            }
-        }
-        // 执行开药
-        String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + prescriptionID;
-        Statement statement = connection.createStatement();
-        statement.executeUpdate(sql);
-        statement.close();
 
-        return 0;
+        // 仅对已缴费明细执行开药
+        PresItem pItem = resultList.get(0);
+        int paymentStatus = pItem.getPaymentStatus();
+        if (paymentStatus == 1) {
+            // 执行开药
+            String sql = "update " + TABLE_NAME + " set PaymentStatus = 2 where id = " + pItem.getId();
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+        }
+
+        return paymentStatus;
     }
 
     public void insert(PresItem pItem) throws SQLException {
