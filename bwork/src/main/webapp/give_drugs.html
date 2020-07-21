@@ -98,7 +98,7 @@
 
     function giveDrugs() {
       var rows = $('#dg').datagrid('getSelections');
-      if (row) {
+      if (rows.length != 0) {
         $.messager.confirm('确认', '是否给药？', function(r) {
           //执行给药，并返回结果
           var idArr = [];
@@ -108,9 +108,11 @@
           $.ajax({
             type: "POST",
             url: "drugGive",
+            traditional: "true",
             data: {
-              idArrLength: rows.length,
-              idArr: idArr
+              idArr: {
+                idArr: idArr
+              }
             },
             success: function(result) {
               if (result) {
@@ -135,7 +137,7 @@
           });
         });
       } else {
-        alert("请选中一行记录！")
+        alert("请选中至少一行记录！")
       }
     }
   </script>

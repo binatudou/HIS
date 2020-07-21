@@ -1,6 +1,7 @@
 package service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import bean.PresItem;
@@ -54,5 +55,12 @@ public class PresItemService {
     PresItemDao piDao = new PresItemDao();
     piDao.insert(pItem);
     piDao.close();
+  }
+
+  public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    List<Integer> pIDList = new ArrayList<>();
+    pIDList.add(1);
+    pIDList.add(2);
+    giveDrugs(pIDList);
   }
 }

@@ -26,17 +26,16 @@ import service.PrescriptionService;
 @WebServlet(name = "DrugGiveServlet", urlPatterns = { "/drugGive" })
 public class DrugGiveServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String STATUS[] = { "尚未开立", "已开立", "已缴费", "已退号" };
+    private static final String STATUS[] = { "未缴费", "已缴费", "已取药", "已退费" };
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             //获取处方明细id
             Map<String, Object> resultMap = new HashMap<>();
-            int len = Integer.parseInt(request.getParameter("idArrLength"));
             List<Integer> pIDList = new ArrayList<>();
-            for (int i = 0; i < len; i++) {
-                pIDList.add(Integer.parseInt(request.getParameter("idArr[" + i + "]")));
+            for (String rID: request.getParameterValues("idArr")) {
+                pIDList.add(Integer.parseInt(rID));
             }
 
             int resultCode = PresItemService.giveDrugs(pIDList);
@@ -78,6 +77,7 @@ public class DrugGiveServlet extends HttpServlet {
                     List<Map<String, Object>> drugs = new ArrayList<>();
                     for (PresItem presItem : dList) {
                         Map<String, Object> drugMap = new HashMap<>();
+                        drugMap.put("presItemID", presItem.getId());
                         drugMap.put("drugName", presItem.getDrugName());
                         drugMap.put("drugPrice", presItem.getDrugPrice());
                         drugMap.put("drugNumber", presItem.getDrugNumber());
