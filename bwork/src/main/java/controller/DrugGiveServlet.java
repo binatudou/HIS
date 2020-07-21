@@ -3,7 +3,9 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +27,16 @@ import service.PrescriptionService;
 public class DrugGiveServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String STATUS[] = { "尚未开立", "已开立", "已缴费", "已退号" };
-    // TODO
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             //获取处方明细id
             Map<String, Object> resultMap = new HashMap<>();
-            int len = Integer.parseInt(request.getParameter("IDArrLength"));
+            int len = Integer.parseInt(request.getParameter("idArrLength"));
             List<Integer> pIDList = new ArrayList<>();
             for (int i = 0; i < len; i++) {
-                pIDList.add(Integer.parseInt(request.getParameter("prescriptionID[" + i + "]")));
+                pIDList.add(Integer.parseInt(request.getParameter("idArr[" + i + "]")));
             }
 
             int resultCode = PresItemService.giveDrugs(pIDList);
@@ -61,7 +62,7 @@ public class DrugGiveServlet extends HttpServlet {
         try {
             List<Map<String, Object>> ppList = new ArrayList<>();
             //根据病历号寻找已缴费处方
-            int recordID = Integer.parseInt(request.getParameter("RecordID"));
+            int recordID = Integer.parseInt(request.getParameter("recordID"));
             List<Prescription> prescriptionList = PrescriptionService.findByRecordID(recordID);
 
             for (Prescription prescription : prescriptionList) {
@@ -88,7 +89,11 @@ public class DrugGiveServlet extends HttpServlet {
                     ppMap.put("presName", prescription.getPresName());
                     ppMap.put("recordID", recordID);
                     ppMap.put("patiName", prescription.getPatiName());
-                    ppMap.put("totalPrice", prescription.getTotalPrice());
+                    //转换日期为字符串格式
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date tempDate = new Date(prescription.getCreationTime().getTime());
+                    String creationTimeStr = sdf.format(tempDate);
+                    ppMap.put("creationTime", creationTimeStr);
                     //以列表形式保存
                     ppMap.put("drugs", drugs);
                     //将转换后的处方存入返回列表中

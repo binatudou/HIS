@@ -9,7 +9,7 @@
   <script type="text/javascript" src="lib/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
 </head>
 
-<body onload="load()">
+<body>
   <table id="dg" title="取药信息查询" class="easyui-datagrid" fit="true" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="false" selectOnCheck="true">
     <thead>
       <tr>
@@ -29,56 +29,10 @@
   <div id="toolbar">
     <label>病历号检索：</label>
     <input id="search-record" name="search-record" class="easyui-searchbox" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
-    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" onclick="giveDrugs()" style="float:right; width:15%">给药</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" iconCls="icon-edit" onclick="giveDrugs()" style="float:right; width:15%">给药</a>
   </div>
 
   <script>
-    var localData = [];
-
-    function load() {
-      //录入数据
-      localData = [{
-        presItemID: 1,
-        presName: "处方A",
-        recordID: 1,
-        patiName: "患者",
-        creationTime: "2020-07-20 12:00:00",
-        drugs: [{
-          drugName: "药品A",
-          drugPrice: 1.23,
-          drugNumber: 3,
-          paymentStatus: "未取药"
-        }, {
-          drugName: "药品B",
-          drugPrice: 11.20,
-          drugNumber: 2,
-          paymentStatus: "未取药"
-        }]
-      }, {
-        presItemID: 1,
-        presName: "处方B",
-        recordID: 1,
-        patiName: "患者",
-        creationTime: "2020-07-20 12:00:30",
-        drugs: [{
-          drugName: "药品C",
-          drugPrice: 59.20,
-          drugNumber: 2,
-          paymentStatus: "未取药"
-        }, {
-          drugName: "药品B",
-          drugPrice: 11.20,
-          drugNumber: 2,
-          paymentStatus: "未取药"
-        }, {
-          drugName: "药品D",
-          drugPrice: 12.02,
-          drugNumber: 2,
-          paymentStatus: "未取药"
-        }]
-      }];
-    }
-
     function searchRecord(value) {
       //判断输入是否为正整数
       var reg = /^\d+$/; // 非负整数
@@ -87,7 +41,7 @@
           type: "GET",
           url: "drugGive",
           data: {
-            RecordID: value
+            recordID: value
           },
           dataType: "JSON",
           success: function(data) {
@@ -106,8 +60,12 @@
       }
     }
 
-    //向表格中输入数据，同处方自动合并
+    //向表格中输入数据
     function fillData(data) {
+      $('#dg').datagrid('loadData', {
+        total: 0,
+        rows: []
+      });
       var index = 0;
       data.forEach(prescription => {
         var preIndex = index;
@@ -139,15 +97,20 @@
     }
 
     function giveDrugs() {
-      var row = $('#dg').datagrid('getSelected');
+      var rows = $('#dg').datagrid('getSelections');
       if (row) {
         $.messager.confirm('确认', '是否给药？', function(r) {
           //执行给药，并返回结果
+          var idArr = [];
+          rows.forEach(presItem => {
+            idArr.push(presItem.presItemID);
+          });
           $.ajax({
             type: "POST",
             url: "drugGive",
             data: {
-              RegistID: row.RegistID
+              idArrLength: rows.length,
+              idArr: idArr
             },
             success: function(result) {
               if (result) {
@@ -160,8 +123,9 @@
               }
               //清空搜索框与表格
               $("#search-record").searchbox("clear");
-              $("#dg").datagrid({
-                data: []
+              $('#dg').datagrid('loadData', {
+                total: 0,
+                rows: []
               });
             },
             error: function(e) {
