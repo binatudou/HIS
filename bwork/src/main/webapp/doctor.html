@@ -16,16 +16,17 @@
   </div>
   <div region="center" border="false" border="false">
     <div class="easyui-tabs" fit="true">
-      <div title="看诊">
-        <iframe id="registration-frame" width="100%" height="99%" src="diagnose.html" frameborder="0"></iframe>
-      </div>
       <div title="开药">
         <iframe id="refund-frame" width="100%" height="99%" src="prescription.html" frameborder="0"></iframe>
+      </div>
+      <div title="看诊">
+        <iframe id="registration-frame" width="100%" height="99%" src="diagnose.html" frameborder="0"></iframe>
       </div>
     </div>
   </div>
 
   <script>
+    var isDiagnosed = true;
     var selectedPatient;
 
     function load() {
@@ -38,6 +39,7 @@
         textField: 'patiName',
         singleSelect: true,
         onSelect: function(index, rowData) {
+          isDiagnosed = false;
           selectedPatient = rowData;
           $('#diagList').datalist("unselectAll");
         }
@@ -50,7 +52,8 @@
         textField: 'patiName',
         singleSelect: true,
         onSelect: function(index, rowData) {
-          selectedID = rowData.registID;
+          isDiagnosed = true;
+          selectedPatient = rowData;
           $('#undiagList').datalist("unselectAll");
         }
       });

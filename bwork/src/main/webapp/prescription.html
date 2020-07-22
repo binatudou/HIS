@@ -135,6 +135,11 @@
 
     //处方检查并提交
     function presSubmit() {
+      //从父页面获取患者信息
+      if (!window.parent.selectedPatient) {
+        alert("提交失败：未选中病人");
+        return;
+      }
       var regID = window.parent.selectedPatient.registID;
       //recordID由service获取
       //doctorID从session中获取
@@ -179,6 +184,10 @@
             if (data.success) {
               alert("提交成功");
               //清空处方
+              presName = "";
+              $("#presDG").datagrid({
+                title: "未命名处方"
+              });
               $('#presDG').datagrid('loadData', {
                 total: 0,
                 rows: []
@@ -207,6 +216,9 @@
     function saveDrug() {
       if (!$('#registForm').form('enableValidation').form('validate')) {
         alert("请填写所有表单必选项");
+        return false;
+      } else if ($("#drugNumber").textbox('getValue') == 0) {
+        alert("药品数量不能为0");
         return false;
       } else {
         var drugs = {
@@ -265,12 +277,12 @@
     //计算处方总价
     function calTotalPrice() {
       var drugs = $('#presDG').datagrid('getData').rows;
-      var price = 0;
+      var price = 0.0;
       for (let index = 0; index < drugs.length; index++) {
         const drug = drugs[index];
         price += drug.drugPrice * drug.drugNumber;
       }
-      return price;
+      return price.toFixed(2);
     }
   </script>
 </body>

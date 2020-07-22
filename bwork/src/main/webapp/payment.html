@@ -30,7 +30,7 @@
   </div>
 
   <!-- 缴费发票窗口 -->
-  <div id="pay-dlg" class="easyui-dialog" style="width:500px;height:500px;padding:10px 20px" closed="true" buttons="#pay-dlg-buttons">
+  <div id="dlg" class="easyui-dialog" style="width:500px;height:500px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
     <div class="ftitle">缴费信息</div>
     <form id="fm" method="post">
       <h3>缴费信息确认</h3>
@@ -50,7 +50,7 @@
         </select>
       </div>
       <div style="margin-bottom:10px">
-        <input name="totalPrice" id="totalPrice" class="easyui-textbox" required="true" label="*应收金额:" style="width:100%">
+        <input name="totalPrice" id="totalPrice" class="easyui-textbox" required="true" label="*应收金额:" readonly style="width:100%">
       </div>
       <div style="margin-bottom:10px">
         <input name="received" id="received" class="easyui-textbox" required="true" label="*实收金额:" style="width:100%">
@@ -60,9 +60,9 @@
       </div>
     </form>
   </div>
-  <div id="pay-dlg-buttons">
+  <div id="dlg-buttons">
     <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="submit()">确认</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#pay-dlg').dialog('close')">取消</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
   </div>
 
   <script>
@@ -81,7 +81,7 @@
           dataType: "JSON",
           success: function(pItemList) {
             if (pItemList.length == 0)
-              alert("未查询到该病历下的挂号记录");
+              alert("未查询到该病历下的未缴费处方");
             else
             //成功
               $("#presDG").datagrid("loadData", pItemList);
@@ -101,7 +101,7 @@
       //TODO
       rowTemp = $('#presDG').datagrid('getSelected');
       if (rowTemp) {
-        $('#pay-dlg').dialog('open').dialog('center').dialog('setTitle', '缴费信息确认');
+        $('#dlg').dialog('open').dialog('center').dialog('setTitle', '缴费信息确认');
         $('#fm').form('load', rowTemp);
       }
     }
@@ -109,6 +109,13 @@
     //提交缴费信息
     function submit() {
       //TODO
+      if (!$("#change").textbox("getValue")) {
+        alert("请输入正确金额");
+        return;
+      } else if ($("#change").textbox("getValue") < 0) {
+        alert("缴费失败：实付金额不足");
+        return;
+      }
       $.ajax({
         type: "POST",
         url: "presPay",
@@ -136,7 +143,7 @@
       $("#presDG").datagrid({
         data: []
       });
-      $('#pay-dlg').dialog('close');
+      $('#dlg').dialog('close');
     }
 
     //计算找零
@@ -147,16 +154,10 @@
       if (_change)
         $("#change").textbox("setValue", _change);
       else
-        alert("请输入正确总额和实付金额");
+        alert("请输入正确金额");
     }
 
     //绑定找零函数
-    $(function() {
-      $("input", $("#totalPrice").next("span")).keyup(function() {
-        calChange();
-      });
-    });
-
     $(function() {
       $("input", $("#received").next("span")).keyup(function() {
         calChange();

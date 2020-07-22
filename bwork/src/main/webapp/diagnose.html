@@ -71,6 +71,20 @@
 
     //提交诊断信息，并清空界面
     function diagnose() {
+      //检查是否选中未诊病人
+      if (!window.parent.selectedPatient) {
+        alert("完诊失败：未选中病人");
+        return;
+      }
+      if (window.parent.isDiagnosed) {
+        alert("完诊失败：已诊病人不能再次完诊");
+        return;
+      }
+      //检查是否选择疾病
+      if (!selectedDisease) {
+        alert("完诊失败：未选中疾病");
+        return;
+      }
       var rID = window.parent.selectedPatient.registID;
       //doctorID从session中取得
       var dID = selectedDisease.diseaseID;
@@ -125,6 +139,8 @@
       var reg = new RegExp(keyword);
       var diseArr = new Array();
 
+      selectedDisease = null;
+
       diseases.forEach(disease => {
         if (reg.test(disease.diseCode)) {
           diseArr.push(disease);
@@ -142,6 +158,7 @@
       diseList.datalist({
         data: diseases
       });
+      selectedDisease = null;
       diagInfo.textbox("setValue", "");
     }
   </script>

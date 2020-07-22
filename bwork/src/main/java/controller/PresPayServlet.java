@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,9 +67,12 @@ public class PresPayServlet extends HttpServlet {
                     pItem.put("patiName", prescription.getPatiName());
                     pItem.put("presName", prescription.getPresName());
                     pItem.put("totalPrice", prescription.getTotalPrice());
-
-                    Date temp = new Date(prescription.getCreationTime().getTime());
-                    pItem.put("creationTime", temp.toString());
+                    //转换日期为字符串格式
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date tempDate = new Date(prescription.getCreationTime().getTime());
+                    String creationTimeStr = sdf.format(tempDate);
+                    pItem.put("creationTime", creationTimeStr);
+                    
                     pItem.put("presStatus", STATUS[prescription.getPresStatus()]);
 
                     rItemList.add(pItem);
