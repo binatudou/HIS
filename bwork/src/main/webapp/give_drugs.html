@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <table id="dg" title="取药信息查询" class="easyui-datagrid" fit="true" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="false" selectOnCheck="true">
+  <table id="dg" title="发药信息查询" class="easyui-datagrid" fit="true" toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="false" selectOnCheck="true">
     <thead>
       <tr>
         <th data-options="field:'ck',checkbox:true" style="width: 5%;"></th>
@@ -29,7 +29,7 @@
   <div id="toolbar">
     <label>病历号检索：</label>
     <input id="search-record" name="search-record" class="easyui-searchbox" prompt='请输入病历号' searcher="searchRecord" style="width:200px" />
-    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" iconCls="icon-edit" onclick="giveDrugs()" style="float:right; width:15%">给药</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" plain="true" iconCls="icon-edit" onclick="giveDrugs()" style="float:right; width:15%">发药</a>
   </div>
 
   <script>
@@ -46,7 +46,7 @@
           dataType: "JSON",
           success: function(data) {
             if (data.length == 0)
-              alert("未查询到该病历下的挂号记录");
+              alert("未查询到该病历下的已缴费处方记录");
             else
               fillData(data);
           },
@@ -99,8 +99,8 @@
     function giveDrugs() {
       var rows = $('#dg').datagrid('getSelections');
       if (rows.length != 0) {
-        $.messager.confirm('确认', '是否给药？', function(r) {
-          //执行给药，并返回结果
+        $.messager.confirm('确认', '是否发药？', function(r) {
+          //执行发药，并返回结果
           var idArr = [];
           rows.forEach(presItem => {
             idArr.push(presItem.presItemID);
@@ -116,9 +116,9 @@
               if (result) {
                 result = jQuery.parseJSON(result);
                 if (result.resultCode == 0) {
-                  alert("给药成功");
+                  alert("发药成功");
                 } else {
-                  alert("更新第" + result.resultCode + "个药品时发生错误");
+                  alert("更新第" + result.resultCode + "个药品信息时发生错误");
                 }
               }
               //清空搜索框与表格

@@ -41,7 +41,7 @@ public class PresItemDao extends Dao<PresItem> {
         }
         
         // 执行开药
-        String sql = "update " + TABLE_NAME + " set DiagStatus = 1 where id = " + prescriptionID;
+        String sql = "update " + TABLE_NAME + " set PaymentStatus = 1 where id = " + prescriptionID;
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         statement.close();
