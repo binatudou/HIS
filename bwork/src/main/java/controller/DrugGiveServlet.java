@@ -28,6 +28,9 @@ public class DrugGiveServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String STATUS[] = { "未缴费", "已缴费", "已取药", "已退费" };
 
+    /**
+     * 根据处方明细id表批量更改处方明细状态(至已取药)
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -56,6 +59,9 @@ public class DrugGiveServlet extends HttpServlet {
         }
     }
 
+    /**
+     * 根据病历号寻找已缴费处方及其处方明细
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

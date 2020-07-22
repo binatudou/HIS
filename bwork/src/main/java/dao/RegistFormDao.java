@@ -29,7 +29,13 @@ public class RegistFormDao extends Dao<RegistForm> {
         return find(TABLE_NAME, "ScheduleID", Integer.toString(scheduleID));
     }
 
-    // 执行完诊，若对应记录不为未看诊状态则直接返回
+    /**
+     * 执行完诊，若对应记录不为未看诊状态则直接返回
+     * 
+     * @param id
+     * @return registForm \ null
+     * @throws SQLException
+     */
     public int diagnose(int id) throws SQLException {
         List<RegistForm> rFormList = find(TABLE_NAME, "id", Integer.toString(id));
         if (rFormList.isEmpty())
@@ -43,7 +49,13 @@ public class RegistFormDao extends Dao<RegistForm> {
         return rFormList.get(0).getDiagStatus();
     }
 
-    // 执行退号，若对应记录不为未看诊状态则直接返回
+    /**
+     * 执行退号，若对应记录不为未看诊状态则直接返回
+     * 
+     * @param id
+     * @return registForm \ null
+     * @throws SQLException
+     */
     public int refund(int id) throws SQLException {
         List<RegistForm> rFormList = find(TABLE_NAME, "id", Integer.toString(id));
         if (rFormList.isEmpty())

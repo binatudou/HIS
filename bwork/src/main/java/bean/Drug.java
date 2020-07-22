@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ * 药品
+ */
 public class Drug {
   private int id;
   private long drugCode;

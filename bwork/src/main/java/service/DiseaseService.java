@@ -7,6 +7,13 @@ import bean.Disease;
 import dao.DiseaseDao;
 
 public class DiseaseService {
+  /**
+   * 获取疾病表
+   * 
+   * @return 疾病
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
   public static List<Disease> diseFindAll() throws SQLException, ClassNotFoundException {
     DiseaseDao diseDao = new DiseaseDao();
     List<Disease> diseList = diseDao.diseFindAll();

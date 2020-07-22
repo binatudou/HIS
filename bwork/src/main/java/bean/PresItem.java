@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ * 处方明细
+ */
 public class PresItem {
   private int id;
   private int prescriptionID;

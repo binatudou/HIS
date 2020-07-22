@@ -34,6 +34,13 @@ public class RegistFormService {
         return rFormList;
     }
 
+    /**
+     * 获取医生排班下的未退号病人
+     * @param scheduleID
+     * @return rFormMap {undiagList: undiagList, diagList: diagList}
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     public static Map<String, Object> docFindPati(int scheduleID) throws ClassNotFoundException, SQLException {
         // 获取数据
         List<RegistForm> rFormList = findByScheduleID(scheduleID);
@@ -61,10 +68,10 @@ public class RegistFormService {
     }
 
     /**
-     * 挂号
+     * 执行挂号
      * 
-     * @param formMap
-     * @param operStr
+     * @param formMap 提交的map
+     * @param operStr 操作员id(字符串格式)
      * @throws ClassNotFoundException
      * @throws SQLException
      */

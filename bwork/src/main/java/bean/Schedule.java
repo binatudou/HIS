@@ -2,6 +2,9 @@ package bean;
 
 import java.sql.Date;
 
+/**
+ * 医生排班
+ */
 public class Schedule {
   private int id;
   private int doctorID;

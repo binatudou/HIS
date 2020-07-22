@@ -25,6 +25,9 @@ public class DiagnoseServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 医生对患者进行完诊，并保存诊断信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

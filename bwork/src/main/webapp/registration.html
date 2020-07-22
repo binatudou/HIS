@@ -314,6 +314,8 @@
           if (jQuery.parseJSON(data).success) {
             alert("提交成功");
             $('#registForm').form('clear');
+          } else {
+            alert("提交失败，请确认账号权限")
           }
         },
         error: function(e) {

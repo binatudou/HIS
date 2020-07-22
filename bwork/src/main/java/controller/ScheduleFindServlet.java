@@ -26,6 +26,9 @@ public class ScheduleFindServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 获取排班id对应医生排班信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

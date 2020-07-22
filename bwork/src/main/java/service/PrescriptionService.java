@@ -24,6 +24,14 @@ public class PrescriptionService {
         return presList;
     }
 
+    /**
+     * 添加处方
+     * 
+     * @param formMap 前端提交的表单
+     * @param docStr  字符串格式医生id
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     public static void add(Map<String, String[]> formMap, String docStr) throws ClassNotFoundException, SQLException {
         int registID = Integer.parseInt(formMap.get("registID")[0]);
         int recordID = RegistFormService.findById(registID).getRecordID();
@@ -73,7 +81,7 @@ public class PrescriptionService {
      * 返回生成处方的结果
      * 
      * @param prescriptionID
-     * @return
+     * @return -1: 未查到或处方号重复 0: 开立成功 1: 处方已开立 2: 处方已缴费 3: 处方已退费
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -95,9 +103,9 @@ public class PrescriptionService {
     public static int presPay(int id) throws SQLException, ClassNotFoundException {
         PrescriptionDao presDao = new PrescriptionDao();
         int result = PresItemService.payDrugs(id);
-        if(result == 0){
+        if (result == 0) {
             result = presDao.presPay(id);
-        }else{
+        } else {
             result += 4;
         }
         presDao.close();

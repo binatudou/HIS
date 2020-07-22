@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ * 号费
+ */
 public class LevelPrice {
   private int id;
   private int levelCode;

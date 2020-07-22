@@ -7,9 +7,6 @@ import bean.Patient;
 import dao.PatientDao;
 
 public class PatientService {
-    /**
-     * 获取patient，若查询结果为空则返回null
-     */
     public static Patient findByRecordID(int recordID) throws SQLException, ClassNotFoundException {
         PatientDao patiDao = new PatientDao();
 
@@ -25,9 +22,6 @@ public class PatientService {
         return patient;
     }
 
-    /**
-     * 向表中插入patient，不使用patient.id
-     */
     public static void insert(Patient patient) throws SQLException, ClassNotFoundException {
         PatientDao patiDao = new PatientDao();
         patiDao.insert(patient);

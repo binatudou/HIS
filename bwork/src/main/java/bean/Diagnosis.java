@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ * 诊断
+ */
 public class Diagnosis {
     private int id;
     private int registID;

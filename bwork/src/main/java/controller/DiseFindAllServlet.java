@@ -27,6 +27,9 @@ public class DiseFindAllServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 获取疾病信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

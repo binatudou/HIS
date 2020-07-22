@@ -27,6 +27,9 @@ public class DrugFindAllServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 获取药品信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

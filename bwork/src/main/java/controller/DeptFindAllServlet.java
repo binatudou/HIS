@@ -27,6 +27,9 @@ public class DeptFindAllServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 获取科室信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

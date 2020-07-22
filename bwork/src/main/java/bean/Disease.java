@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ * 疾病
+ */
 public class Disease {
   private int id;
   private int diseCategoryID;

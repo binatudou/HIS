@@ -19,6 +19,9 @@ import service.PrescriptionService;
 public class PresAddServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 医生开立处方，方法见doGet
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);

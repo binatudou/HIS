@@ -26,6 +26,9 @@ public class PresPayServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String STATUS[] = { "尚未开立", "未缴费", "已缴费", "已退号" };
 
+    /**
+     * 根据处方id对处方进行缴费
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -50,6 +53,9 @@ public class PresPayServlet extends HttpServlet {
         }
     }
 
+    /**
+     * 根据病历号获取未缴费处方
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

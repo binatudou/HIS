@@ -31,7 +31,7 @@ public class PresItemDao extends Dao<PresItem> {
         // 未查到处方或药品记录
         if (pItemList.isEmpty())
             return -1;
-        //遍历处方，检查处方明细
+        // 遍历处方，检查处方明细
         for (int i = 0; i < pItemList.size(); i++) {
             PresItem presItem = pItemList.get(i);
             // 处方明细不为未缴费状态
@@ -39,9 +39,8 @@ public class PresItemDao extends Dao<PresItem> {
                 return i + 1;
             }
         }
-        
-        // 执行开药
-        String sql = "update " + TABLE_NAME + " set PaymentStatus = 1 where id = " + prescriptionID;
+        // 执行缴费
+        String sql = "update " + TABLE_NAME + " set PaymentStatus = 1 where PrescriptionID = " + prescriptionID;
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         statement.close();
@@ -50,8 +49,9 @@ public class PresItemDao extends Dao<PresItem> {
 
     /**
      * 对已缴费处方明细执行开药
+     * 
      * @param presItemID 处方明细id
-     * @return paymentStatus 处方明细状态
+     * @return
      * @throws SQLException
      */
     public int giveDrug(int presItemID) throws SQLException {

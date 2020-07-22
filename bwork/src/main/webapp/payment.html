@@ -31,7 +31,6 @@
 
   <!-- 缴费发票窗口 -->
   <div id="dlg" class="easyui-dialog" style="width:500px;height:500px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
-    <div class="ftitle">缴费信息</div>
     <form id="fm" method="post">
       <h3>缴费信息确认</h3>
       <div style="margin-bottom:10px">
@@ -98,12 +97,13 @@
 
     //加载缴费信息并打印发票
     function pay() {
-      //TODO
       rowTemp = $('#presDG').datagrid('getSelected');
       if (rowTemp) {
         $('#dlg').dialog('open').dialog('center').dialog('setTitle', '缴费信息确认');
         $('#fm').form('clear');
         $('#fm').form('load', rowTemp);
+      } else {
+        alert("请选中一行记录！");
       }
     }
 
@@ -175,7 +175,7 @@
       var received = $("input", $("#received").next("span")).val();
       var _change = received - totalPrice;
       if (_change)
-        $("#change").textbox("setValue", _change);
+        $("#change").textbox("setValue", _change.toFixed(2));
       else
         alert("请输入正确金额");
     }

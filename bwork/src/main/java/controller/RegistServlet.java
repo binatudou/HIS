@@ -24,6 +24,9 @@ public class RegistServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 返回挂号结果
+     */
     @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,7 +37,7 @@ public class RegistServlet extends HttpServlet {
                 resultMap.put("success", false);
             } else {
                 Map<String, String[]> formMap = request.getParameterMap();
-                
+
                 RegistFormService.regist(formMap, operatorID);
 
                 resultMap.put("success", true);

@@ -17,6 +17,9 @@ public class LoginServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 测试账号登录
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String userID = request.getParameter("userID");

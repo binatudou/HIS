@@ -26,6 +26,9 @@ public class PatientFindServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 根据病历号寻找患者记录
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

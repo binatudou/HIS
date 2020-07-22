@@ -3,6 +3,9 @@ package bean;
 import java.sql.Timestamp;
 import java.sql.Date;
 
+/**
+ * 挂号单
+ */
 public class RegistForm {
     private int id;
     private int recordID;

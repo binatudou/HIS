@@ -2,6 +2,9 @@ package bean;
 
 import java.sql.Date;
 
+/**
+ * 患者
+ */
 public class Patient {
     private int id;
     private int recordID;

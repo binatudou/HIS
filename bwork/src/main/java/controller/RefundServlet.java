@@ -25,6 +25,9 @@ public class RefundServlet extends HttpServlet {
     private static final String STATUS[] = { "未诊", "已诊", "已退号" };
     private static final String DOC_DATE[] = { "上午", "下午", "晚间" };
 
+    /**
+     * 根据挂号id退号
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -46,6 +49,9 @@ public class RefundServlet extends HttpServlet {
         }
     }
 
+    /**
+     * 根据病历号获取挂号信息
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

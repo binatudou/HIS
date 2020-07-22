@@ -2,6 +2,9 @@ package bean;
 
 import java.sql.Timestamp;
 
+/**
+ * 处方
+ */
 public class Prescription {
   private int id;
   private int registID;

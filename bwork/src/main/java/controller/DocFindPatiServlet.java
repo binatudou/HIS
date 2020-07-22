@@ -23,6 +23,9 @@ public class DocFindPatiServlet extends HttpServlet {
     doGet(request, response);
   }
 
+  /**
+   * 获取对应医生排班下的未退号患者列表(分为已诊和未诊)
+   */
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
       int scheduleID = Integer.parseInt(String.valueOf(request.getSession().getAttribute("scheduleID")));

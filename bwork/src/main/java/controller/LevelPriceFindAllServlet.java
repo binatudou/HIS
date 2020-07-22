@@ -27,6 +27,9 @@ public class LevelPriceFindAllServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 获取号别对应号费
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

@@ -29,6 +29,9 @@ public class ScheduleSelectServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+     * 发送特定日期、科室、午别、号别的医生排班
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

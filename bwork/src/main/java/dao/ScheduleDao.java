@@ -16,6 +16,24 @@ public class ScheduleDao extends Dao<Schedule> {
         super();
     }
 
+    public Schedule find(int scheduleID) throws SQLException {
+        List<Schedule> scheList = find(TABLE_NAME, "id", String.valueOf(scheduleID));
+        if (scheList.isEmpty())
+            return null;
+        else
+            return scheList.get(0);
+    }
+
+    /**
+     * 搜寻特定日期、科室、午别、号别的医生排班
+     * 
+     * @param workDate
+     * @param departmentID
+     * @param workTime
+     * @param docLevel
+     * @return 排班list
+     * @throws SQLException
+     */
     public List<Schedule> searchSchedule(Date workDate, int departmentID, int workTime, int docLevel)
             throws SQLException {
         Statement statement = connection.createStatement();
@@ -33,14 +51,13 @@ public class ScheduleDao extends Dao<Schedule> {
         return list;
     }
 
-    public Schedule find(int scheduleID) throws SQLException {
-        List<Schedule> scheList = find(TABLE_NAME, "id", String.valueOf(scheduleID));
-        if (scheList.isEmpty())
-            return null;
-        else
-            return scheList.get(0);
-    }
-
+    /**
+     * 使id对应排班记录已用号数+1
+     * 
+     * @param scheduleID
+     * @return
+     * @throws SQLException
+     */
     public boolean regist(int scheduleID) throws SQLException {
         List<Schedule> scheList = find(TABLE_NAME, "id", Integer.toString(scheduleID));
         // 未查到或排班号重复

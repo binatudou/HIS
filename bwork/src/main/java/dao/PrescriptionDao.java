@@ -76,6 +76,13 @@ public class PrescriptionDao extends Dao<Prescription> {
         preparedStatement.close();
     }
 
+    /**
+     * 创建新处方，设置状态为正在开立，返回处方id
+     * 
+     * @param prescription
+     * @return prescriptionID
+     * @throws SQLException
+     */
     public int create(Prescription prescription) throws SQLException {
         insert(prescription);
         int prescriptionID;
