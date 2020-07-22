@@ -20,7 +20,7 @@ public class PresItemService {
 
     for (int i = 0; i < pIDList.size(); i++) {
       int presItemID = pIDList.get(i);
-      if(piDao.giveDrug(presItemID) != 1){
+      if (piDao.giveDrug(presItemID) != 1) {
         piDao.close();
         return i + 1;
       }
@@ -30,6 +30,13 @@ public class PresItemService {
     return 0;
   }
 
+  /**
+   * 
+   * @param pIDList 待缴费的处方明细id
+   * @return -1: 未查到处方或药品记录; 0: 缴费成功; n: 第n个药品缴费错误(从1起数)
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
   public static int payDrugs(int prescriptionID) throws SQLException, ClassNotFoundException {
     PresItemDao piDao = new PresItemDao();
     int resultCode = piDao.payDrugs(prescriptionID);

@@ -24,7 +24,7 @@ import service.PrescriptionService;
 @WebServlet(name = "PresPayServlet", urlPatterns = { "/presPay" })
 public class PresPayServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String STATUS[] = { "尚未开立", "已开立", "已缴费", "已退号" };
+    private static final String STATUS[] = { "尚未开立", "未缴费", "已缴费", "已退号" };
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -32,9 +32,9 @@ public class PresPayServlet extends HttpServlet {
             Map<String, Object> resultMap = new HashMap<>();
             int prescriptionID = Integer.parseInt(request.getParameter("prescriptionID"));
 
-            PrescriptionService.presPay(prescriptionID);
+            int resultCode = PrescriptionService.presPay(prescriptionID);
 
-            resultMap.put("success", true);
+            resultMap.put("resultCode", resultCode);
 
             String result = JSON.toJSONString(resultMap);
 
@@ -59,7 +59,7 @@ public class PresPayServlet extends HttpServlet {
             List<Prescription> prescriptionList = PrescriptionService.findByRecordID(recordID);
 
             for (Prescription prescription : prescriptionList) {
-                //仅发送未缴费的处方
+                // 仅发送未缴费的处方
                 if (prescription.getPresStatus() == 1) {
                     Map<String, Object> pItem = new HashMap<>();
                     pItem.put("prescriptionID", prescription.getId());
@@ -67,12 +67,12 @@ public class PresPayServlet extends HttpServlet {
                     pItem.put("patiName", prescription.getPatiName());
                     pItem.put("presName", prescription.getPresName());
                     pItem.put("totalPrice", prescription.getTotalPrice());
-                    //转换日期为字符串格式
+                    // 转换日期为字符串格式
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date tempDate = new Date(prescription.getCreationTime().getTime());
                     String creationTimeStr = sdf.format(tempDate);
                     pItem.put("creationTime", creationTimeStr);
-                    
+
                     pItem.put("presStatus", STATUS[prescription.getPresStatus()]);
 
                     rItemList.add(pItem);

@@ -88,14 +88,18 @@ public class PrescriptionService {
      * 执行缴费，返回执行前处方的缴费情况
      *
      * @param id
-     * @return
+     * @return -1: 查询处方时出错 0:处方未开立 1: 缴费成功 2: 处方已缴费 3: 处方已退费 n:处方明细第n - 3项缴费出错
      * @throws SQLException
      * @throws ClassNotFoundException
      */
     public static int presPay(int id) throws SQLException, ClassNotFoundException {
         PrescriptionDao presDao = new PrescriptionDao();
-        PresItemService.payDrugs(id);
-        int result = presDao.presPay(id);
+        int result = PresItemService.payDrugs(id);
+        if(result == 0){
+            result = presDao.presPay(id);
+        }else{
+            result += 4;
+        }
         presDao.close();
         return result;
     }

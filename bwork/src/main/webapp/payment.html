@@ -102,6 +102,7 @@
       rowTemp = $('#presDG').datagrid('getSelected');
       if (rowTemp) {
         $('#dlg').dialog('open').dialog('center').dialog('setTitle', '缴费信息确认');
+        $('#fm').form('clear');
         $('#fm').form('load', rowTemp);
       }
     }
@@ -125,10 +126,32 @@
         success: function(result) {
           if (result) {
             result = jQuery.parseJSON(result);
-            if (result.success) {
-              alert("缴费成功");
-            } else {
-              alert("缴费失败，请检查账户权限");
+            switch (result.resultCode) {
+              case -1:
+                alert("缴费失败：未找到该处方");
+                break;
+
+              case 0:
+                alert("缴费失败：处方未开立");
+                break;
+
+              case 1:
+                alert("缴费成功");
+                break;
+
+              case 2:
+                alert("缴费失败：处方已缴费");
+                break;
+
+              case 3:
+                alert("缴费失败：处方已退费");
+                break;
+
+              default:
+                if (result.resultCode > 3)
+                  alert("缴费失败，请检查该处方第" + (result.resultCode - 3) + "项药品记录");
+                else
+                  alert("未知返回值");
             }
           } else {
             alert("未知返回值");

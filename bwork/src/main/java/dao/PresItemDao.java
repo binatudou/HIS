@@ -27,7 +27,7 @@ public class PresItemDao extends Dao<PresItem> {
      * @throws SQLException
      */
     public int payDrugs(int prescriptionID) throws SQLException {
-        List<PresItem> pItemList = find(TABLE_NAME, "id", Integer.toString(prescriptionID));
+        List<PresItem> pItemList = find(TABLE_NAME, "PrescriptionID", Integer.toString(prescriptionID));
         // 未查到处方或药品记录
         if (pItemList.isEmpty())
             return -1;
