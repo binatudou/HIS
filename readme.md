@@ -2,8 +2,6 @@
 
 前端使用jquery + easyui
 
-使用filter拦截未登录请求
-
 后端使用Servlet3.0，基于MVC三层架构独立完成
 
 数据库使用mysql，使用JDBC连接
